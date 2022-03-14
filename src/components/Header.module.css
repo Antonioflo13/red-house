@@ -1,0 +1,33 @@
+.header {
+  width: 100%;
+  background-color: white;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5rem 0 5rem;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+}
+
+.links a {
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.links a:hover {
+  color: #fe8fa3;
+}
+
+.h1 {
+  color: #ff385b;
+}
