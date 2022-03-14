@@ -1,48 +1,52 @@
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import "@splidejs/splide/dist/css/splide.min.css";
 
-import React from 'react';
-import { Carousel } from 'primereact/carousel';
-import './CarouselDemo.css';
+const Carousel = () => {
+  const images = [
+    {
+      id: "1",
+      url: "https://www.sunshineluxuryrooms.it/wp-content/uploads/sites/258/2021/03/sunshine_luxury_rooms_ostuni_slide_04.jpg",
+      postion: 'center'
+    },
+    {
+      id: "2",
+      url: "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/156000/156816-Ostuni-Cathedral.jpg",
+      postion: 'top'
+    },
+  ];
 
-const CarouselDemo = () => {
-    const products = [
-        {   
-            id: 1, 
-            image: 'https://www.vacanzeostuni.com/wp-content/uploads/vacanze-ostuni-casa-lorenzo-terrazza.jpg',
-            name: '1'
-        },
-        {   
-            id: 2, 
-            image: 'https://www.vacanzeostuni.com/wp-content/uploads/vacanze-ostuni-casa-ilari-balcone-vista-mare.jpg',
-            name: '2'
-        }
-    ]
-    
-    const productTemplate = (product) => {
+  return (
+    <Splide
+      options={{
+        type: "fade",
+        rewind: true,
+        width: "100vw",
+        heightRatio: 0.2,
+        autoplay: true,
+        resetProgress: true,
+        pauseOnHover: true,
+        interval: 4000,
+        arrows: false,
+        pagination: false,
+      }}
+    >
+      {images.map((image) => {
         return (
-            <div className="product-item">
-                <div className="product-item-content">
-                    <div className="mb-3">
-                        <img id={product.id} src={`${product.image}`}  alt={product.name} className="product-image" />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="carousel-demo">
-            <div className="card">
-                <Carousel 
-                value={products} 
-                numVisible={1}
-                numScroll={2}
-                itemTemplate={productTemplate}
-                autoplayInterval={10}
-                circular={true}
+          <SplideSlide key={image.id}>
+            <img
+              style={{
+                width: "100%",
+                height: "400px",
+                objectFit: "cover",
+                objectPosition: image.postion,
+              }}
+              src={`${image.url}`}
+              alt="image1"
             />
-            </div>
-        </div>
-    );
-}
-
-export default CarouselDemo;
+          </SplideSlide>
+        );
+      })}
+    </Splide>
+  );
+};
+export default Carousel;
