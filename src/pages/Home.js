@@ -9,15 +9,17 @@ const Home = () => {
     <div>
       <Carousel />
       <div style={{ position: "relative" }}>
-        <div className={styles.container}>
-          <div className={styles.home}>
-            <div style={{ position: "absolute", top: -30 }}>
-              <CardBooking />
+        <div className={styles.bgHome}>
+            <div className={styles.homeContainer}>
+                <div className={styles.cardBookingContainer}>
+                    <div style={{ position: "absolute", top: -30 }}>
+                    <CardBooking />
+                    </div>
+                </div>
+                <div style={{paddingTop: '20rem'}}>
+                    <Services />
+                </div>
             </div>
-            <div>
-              <Services />
-            </div>
-          </div>
         </div>
       </div>
     </div>

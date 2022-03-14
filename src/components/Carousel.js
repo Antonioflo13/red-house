@@ -21,7 +21,7 @@ const Carousel = () => {
         type: "fade",
         rewind: true,
         width: "100vw",
-        heightRatio: 0.2,
+        heightRatio: 0.35,
         autoplay: true,
         resetProgress: true,
         pauseOnHover: true,
@@ -36,7 +36,7 @@ const Carousel = () => {
             <img
               style={{
                 width: "100%",
-                height: "400px",
+                height: "100vh",
                 objectFit: "cover",
                 objectPosition: image.postion,
               }}
