@@ -1,17 +1,62 @@
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/splide.min.css";
 
+import image1 from "../assets/img/carouselImages/img1.jpeg";
+import image2 from "../assets/img/carouselImages/img2.jpeg";
+import image3 from "../assets/img/carouselImages/img3.jpeg";
+import image4 from "../assets/img/carouselImages/img4.jpeg";
+import image5 from "../assets/img/carouselImages/img5.jpeg";
+import image6 from "../assets/img/carouselImages/img6.jpeg";
+import image7 from "../assets/img/carouselImages/img7.jpeg";
+import image8 from "../assets/img/carouselImages/img8.jpeg";
+import image9 from "../assets/img/carouselImages/img9.jpeg";
+
 const Carousel = () => {
   const images = [
     {
       id: "1",
-      url: "https://www.sunshineluxuryrooms.it/wp-content/uploads/sites/258/2021/03/sunshine_luxury_rooms_ostuni_slide_04.jpg",
-      postion: 'center'
+      url: image1,
+      postion: "center",
     },
     {
       id: "2",
-      url: "https://a.travel-assets.com/findyours-php/viewfinder/images/res70/156000/156816-Ostuni-Cathedral.jpg",
-      postion: 'top'
+      url: image2,
+      postion: "center",
+    },
+    {
+      id: "3",
+      url: image3,
+      postion: "center",
+    },
+    {
+      id: "4",
+      url: image4,
+      postion: "center",
+    },
+    {
+      id: "5",
+      url: image5,
+      postion: "center",
+    },
+    {
+      id: "6",
+      url: image6,
+      postion: "center",
+    },
+    {
+      id: "7",
+      url: image7,
+      postion: "center",
+    },
+    {
+      id: "8",
+      url: image8,
+      postion: "center",
+    },
+    {
+      id: "9",
+      url: image9,
+      postion: "center",
     },
   ];
 

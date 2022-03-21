@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+
+import Logo from "../assets/img/Logo.png";
 import styles from "./Header.module.css";
 
 const Header = () => {
@@ -6,16 +8,8 @@ const Header = () => {
     <header className={`${styles.header}, shadow-3`}>
       <div className={styles.container}>
         <div>
-          <Link className={styles.link} to="/">
-            <h2 className={styles.h1}>Red House</h2>
-          </Link>
-        </div>
-        <div className={styles.links}>
-          <Link className={styles.h1} to="/">
-            La Struttura
-          </Link>
-          <Link className={styles.h1} to="/">
-            Dove Siamo
+          <Link to="/">
+            <img src={Logo} alt={Logo} width={100} />
           </Link>
         </div>
       </div>

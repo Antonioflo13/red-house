@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.number {
+  font-weight: bold;
+  padding: 1rem;
+}
