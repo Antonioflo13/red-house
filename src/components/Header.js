@@ -8,7 +8,7 @@ const Header = () => {
     <header className={`${styles.header}, shadow-3`}>
       <div className={styles.container}>
         <div>
-          <Link to="/">
+          <Link to="grid">
             <img src={Logo} alt={Logo} width={100} />
           </Link>
         </div>

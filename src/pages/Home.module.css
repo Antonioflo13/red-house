@@ -1,14 +1,28 @@
+.container {
+  display: grid;
+  grid-template-areas:
+    "carousel  carousel carousel carousel"
+    ".  cardBooking cardBooking ."
+    ".  services services .";
+}
+
 .bgHome {
   background-image: url("https://i.pinimg.com/originals/2e/fe/c2/2efec261efc0e9b0d87ca985fe25c910.jpg");
 }
 
-.homeContainer {
-  padding: 0 15% 0 15%;
+.carousel {
+  grid-area: carousel;
 }
 
 .cardBookingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  grid-area: cardBooking;
+  grid-row-end: carousel;
+  margin-bottom: 2rem;
+  justify-self: center;
+  align-self: end;
+  z-index: 2;
+}
+
+.services {
+  grid-area: services;
 }

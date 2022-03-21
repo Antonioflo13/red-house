@@ -8,14 +8,14 @@ const Counter = (props) => {
   const [counter, setCounter] = useState(0);
 
   const minusCounter = useCallback(() => {
-    setCounter(counter - 1);
-  }, [counter]);
+    setCounter((prevCounter) => prevCounter - 1);
+  }, []);
 
   const plusCounter = useCallback(() => {
-    setCounter(counter + 1);
-  }, [counter]);
+    setCounter((prevCounter) => prevCounter + 1);
+  }, []);
 
-  useEffect(() => setVisitors(counter), [counter]);
+  useEffect(() => setVisitors(counter), [counter, setVisitors]);
 
   return (
     <div className={style.container}>
