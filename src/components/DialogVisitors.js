@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useMemo,useCallback, useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 
 import style from "./DialogVisitors.module.css";
@@ -7,12 +7,9 @@ import Counter from "./Counter";
 import DialogVisitorsFooter from "./DialogVisitorsFooter";
 
 const DialogVisitors = (props) => {
-  const { totalVisitors } = props;
+  const { confirmVisitors, totalVisitors } = props;
   const [openDialog, setOpenDialog] = useState(false);
-  const [adults, setAdults] = useState(null);
-  const [children, setChildren] = useState(null);
-  const [newborns, setNewbors] = useState(null);
-  const [confirmVisitors, setConfirmVisitors] = useState();
+  const [isConfirmVisitors, setConfirmVisitors] = useState();
   const visitorsTypes = [
     {
       id: 1,
@@ -31,37 +28,7 @@ const DialogVisitors = (props) => {
     },
   ];
 
-  const handlerVisitors = useCallback((type, number) => {
-    switch (type) {
-      case 1:
-        setAdults({
-          type: "Adulti",
-          number,
-        });
-        handlerVisitors();
-        break;
-      case 2:
-        setChildren({
-          type: "Bambini",
-          number,
-        });
-        break;
-      case 3:
-        setNewbors({
-          type: "Neonati",
-          number,
-        });
-        break;
-      default:
-        
-        break;
-    }
-    setConfirmVisitors(adults, children, newborns);
-  }, [adults, children, newborns]);
-  
   useEffect(() => setOpenDialog(props.openDialog), [props.openDialog]);
-
-  // useEffect(() => console.log(confirmVisitors), [confirmVisitors]);
 
   const visitors = () => {
     onHide();
@@ -72,32 +39,39 @@ const DialogVisitors = (props) => {
     setOpenDialog(false);
   };
 
-  // const setVisitors = (type, number) => {
-  //   switch (type) {
-  //     case 1:
-  //       setAdults({
-  //         type: "Adulti",
-  //         number,
-  //       });
-  //       handlerVisitors();
-  //       break;
-  //     case 2:
-  //       setChildren({
-  //         type: "Bambini",
-  //         number,
-  //       });
-  //       break;
-  //     case 3:
-  //       setNewbors({
-  //         type: "Neonati",
-  //         number,
-  //       });
-  //       break;
-  //     default:
-  //       setAdults();
-  //       break;
-  //   }
-  // };
+  const a = useMemo(() => [], []);
+
+  const setVisitors = useCallback((type, number) => {
+    switch (type) {
+      case 1:
+        a.push({
+          type: "Adulti",
+          number,
+        });
+        break;
+      case 2:
+        a.push({
+          type: "Bambini",
+          number,
+        });
+        break;
+      case 3:
+        a.push({
+          type: "Neonati",
+          number,
+        });
+        break;
+      default:
+        break;
+    }
+    if (a?.type === 'Adulti') {
+      setConfirmVisitors(a);
+    }
+  }, [a]);
+
+  useEffect(() => {
+    console.log(a);
+  }, [a]);
 
   return (
     <Dialog
@@ -119,7 +93,7 @@ const DialogVisitors = (props) => {
               <div>{visitorType.description}</div>
             </div>
             <Counter
-              setVisitors={(number) => handlerVisitors(visitorType.id, number)}
+              setVisitors={(number) => setVisitors(visitorType.id, number)}
               totalVisitors={totalVisitors}
             />
           </div>
