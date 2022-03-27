@@ -33,7 +33,6 @@ const CardBooking = () => {
         totalVisitors={totalVisitors}
         openDialog={openDialog}
         onHide={() => setOpenDialog(false)}
-        confirmVisitors={confirmVisitors}
       />
       <Card
         title="Per i prezzi, aggiungi le date"

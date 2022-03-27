@@ -15,7 +15,7 @@ const Counter = (props) => {
     setCounter((prevCounter) => prevCounter + 1);
   }, []);
 
-  useEffect(() => setVisitors(counter), [counter, setVisitors]);
+  useEffect(() => setVisitors(counter), [counter]);
 
   return (
     <div className={style.container}>

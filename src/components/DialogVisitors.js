@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Dialog } from "primereact/dialog";
 
 import style from "./DialogVisitors.module.css";
@@ -9,10 +9,8 @@ import DialogVisitorsFooter from "./DialogVisitorsFooter";
 const DialogVisitors = (props) => {
   const { totalVisitors } = props;
   const [openDialog, setOpenDialog] = useState(false);
-  const [adults, setAdults] = useState(null);
-  const [children, setChildren] = useState(null);
-  const [newborns, setNewbors] = useState(null);
-  const [confirmVisitors, setConfirmVisitors] = useState();
+  const [confirmVisitors, setConfirmVisitors] = useState([]);
+  const [children, setChildren] = useState(false);
   const visitorsTypes = [
     {
       id: 1,
@@ -31,39 +29,79 @@ const DialogVisitors = (props) => {
     },
   ];
 
-  const handlerVisitors = useCallback((type, number) => {
-    switch (type) {
-      case 1:
-        setAdults({
-          type: "Adulti",
-          number,
-        });
-        handlerVisitors();
-        break;
-      case 2:
-        setChildren({
-          type: "Bambini",
-          number,
-        });
-        break;
-      case 3:
-        setNewbors({
-          type: "Neonati",
-          number,
-        });
-        break;
-      default:
-        
-        break;
+  let visitorsArray = [];
+
+  const checkIfexsist = () => {
+    for (const visitorArray of visitorsArray) {
+      if (visitorArray.type === "Bambini") {
+        console.log(visitorArray.type);
+        setChildren(true);
+      }
     }
-    setConfirmVisitors(adults, children, newborns);
-  }, [adults, children, newborns]);
-  
+  };
+
+  const handlerVisitors = useCallback(
+    (visitorsArray, type, number) => {
+      checkIfexsist();
+      switch (type) {
+        case 1:
+          if (visitorsArray.length > 0) {
+            for (const visitorArray of visitorsArray) {
+              if (visitorArray.type === "Adulti") {
+                visitorArray.number = number;
+              }
+            }
+          } else {
+            visitorsArray.push({
+              type: "Adulti",
+              number,
+            });
+          }
+          break;
+        case 2:
+          console.log(children);
+          if (!children) {
+            console.log(false);
+            visitorsArray.push({
+              type: "Bambini",
+              number,
+            });
+          }
+          // if (children) {
+          //   for (const visitorArray of visitorsArray) {
+          //     if (visitorArray.type === "Bambini") {
+          //       visitorArray.number = number;
+          //     }
+          //   }
+          // }
+          break;
+        case 3:
+          // if (visitorsArray.length > 0) {
+          //   for (const visitorArray of visitorsArray) {
+          //     if (visitorArray.type === "Neonati") {
+          //       visitorArray.number = number;
+          //     } else {
+          //       visitorsArray.push({
+          //         type: "Neonati",
+          //         number,
+          //       });
+          //     }
+          //   }
+          // }
+          break;
+        default:
+          console.log("there are no selected");
+          break;
+      }
+    },
+    [children, checkIfexsist]
+  );
+
   useEffect(() => setOpenDialog(props.openDialog), [props.openDialog]);
 
-  // useEffect(() => console.log(confirmVisitors), [confirmVisitors]);
-
   const visitors = () => {
+    setConfirmVisitors(visitorsArray);
+    console.log(visitorsArray);
     onHide();
   };
 
@@ -71,33 +109,6 @@ const DialogVisitors = (props) => {
     props.onHide();
     setOpenDialog(false);
   };
-
-  // const setVisitors = (type, number) => {
-  //   switch (type) {
-  //     case 1:
-  //       setAdults({
-  //         type: "Adulti",
-  //         number,
-  //       });
-  //       handlerVisitors();
-  //       break;
-  //     case 2:
-  //       setChildren({
-  //         type: "Bambini",
-  //         number,
-  //       });
-  //       break;
-  //     case 3:
-  //       setNewbors({
-  //         type: "Neonati",
-  //         number,
-  //       });
-  //       break;
-  //     default:
-  //       setAdults();
-  //       break;
-  //   }
-  // };
 
   return (
     <Dialog
@@ -119,7 +130,9 @@ const DialogVisitors = (props) => {
               <div>{visitorType.description}</div>
             </div>
             <Counter
-              setVisitors={(number) => handlerVisitors(visitorType.id, number)}
+              setVisitors={(number) =>
+                handlerVisitors(visitorsArray, visitorType.id, number)
+              }
               totalVisitors={totalVisitors}
             />
           </div>
