@@ -31,7 +31,7 @@ const grid = () => {
   return (
     <div className={style.container}>
       {images.map((image) => (
-        <div className={`${style.imageContainer} ${image.size === 'lg' ? style.span2x : ''} `}>
+        <div className={`${style.imageContainer} ${image.size === 'lg' ? style.span2x : style.span1x} `}>
           <img className={style.img} key={image.id} src={image.src} alt="" />
         </div>
       ))}

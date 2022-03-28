@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 
 import style from "./DialogVisitors.module.css";
