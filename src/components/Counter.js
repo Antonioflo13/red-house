@@ -15,7 +15,7 @@ const Counter = (props) => {
     setCounter((prevCounter) => prevCounter + 1);
   }, []);
 
-  useEffect(() => setVisitors(counter), [counter]);
+  useEffect(() => setVisitors(counter), [counter, setVisitors]);
 
   return (
     <div className={style.container}>
@@ -29,7 +29,7 @@ const Counter = (props) => {
       <Button
         icon="pi pi-plus"
         className="p-button-sm p-button-rounded p-button-secondary"
-        disabled={counter === 4 && totalVisitors === 4}
+        disabled={totalVisitors === 4}
         onClick={plusCounter}
       />
     </div>

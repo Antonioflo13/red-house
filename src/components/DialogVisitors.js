@@ -7,10 +7,12 @@ import Counter from "./Counter";
 import DialogVisitorsFooter from "./DialogVisitorsFooter";
 
 const DialogVisitors = (props) => {
-  const { totalVisitors } = props;
+  const { confirmVisitors } = props;
   const [openDialog, setOpenDialog] = useState(false);
-  const [confirmVisitors, setConfirmVisitors] = useState([]);
+  const [adult, setAdult] = useState(false);
   const [children, setChildren] = useState(false);
+  const [newborn, setNewborn] = useState(false);
+  const [totalVisitors, setTotalVisitors] = useState(0);
   const visitorsTypes = [
     {
       id: 1,
@@ -29,79 +31,33 @@ const DialogVisitors = (props) => {
     },
   ];
 
-  let visitorsArray = [];
-
-  const checkIfexsist = () => {
-    for (const visitorArray of visitorsArray) {
-      if (visitorArray.type === "Bambini") {
-        console.log(visitorArray.type);
-        setChildren(true);
-      }
+  const handlerVisitors = useCallback((type, number) => {
+    switch (type) {
+      case 1:
+        setAdult(number);
+        break;
+      case 2:
+        setChildren(number);
+        break;
+      case 3:
+        setNewborn(number);
+        break;
+      default:
+        console.log("there are no selected");
+        break;
     }
-  };
-
-  const handlerVisitors = useCallback(
-    (visitorsArray, type, number) => {
-      checkIfexsist();
-      switch (type) {
-        case 1:
-          if (visitorsArray.length > 0) {
-            for (const visitorArray of visitorsArray) {
-              if (visitorArray.type === "Adulti") {
-                visitorArray.number = number;
-              }
-            }
-          } else {
-            visitorsArray.push({
-              type: "Adulti",
-              number,
-            });
-          }
-          break;
-        case 2:
-          console.log(children);
-          if (!children) {
-            console.log(false);
-            visitorsArray.push({
-              type: "Bambini",
-              number,
-            });
-          }
-          // if (children) {
-          //   for (const visitorArray of visitorsArray) {
-          //     if (visitorArray.type === "Bambini") {
-          //       visitorArray.number = number;
-          //     }
-          //   }
-          // }
-          break;
-        case 3:
-          // if (visitorsArray.length > 0) {
-          //   for (const visitorArray of visitorsArray) {
-          //     if (visitorArray.type === "Neonati") {
-          //       visitorArray.number = number;
-          //     } else {
-          //       visitorsArray.push({
-          //         type: "Neonati",
-          //         number,
-          //       });
-          //     }
-          //   }
-          // }
-          break;
-        default:
-          console.log("there are no selected");
-          break;
-      }
-    },
-    [children, checkIfexsist]
-  );
+  }, []);
 
   useEffect(() => setOpenDialog(props.openDialog), [props.openDialog]);
 
+  useEffect(
+    () => setTotalVisitors(adult + children + newborn),
+    [adult, children, newborn]
+  );
+
   const visitors = () => {
-    setConfirmVisitors(visitorsArray);
-    console.log(visitorsArray);
+    confirmVisitors(adult, children, newborn);
+    setTotalVisitors(0);
     onHide();
   };
 
@@ -130,9 +86,7 @@ const DialogVisitors = (props) => {
               <div>{visitorType.description}</div>
             </div>
             <Counter
-              setVisitors={(number) =>
-                handlerVisitors(visitorsArray, visitorType.id, number)
-              }
+              setVisitors={(number) => handlerVisitors(visitorType.id, number)}
               totalVisitors={totalVisitors}
             />
           </div>

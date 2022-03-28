@@ -1,6 +1,6 @@
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import styles from "./CardBooking.module.css";
 
@@ -17,21 +17,28 @@ const CardBooking = () => {
     </span>
   );
 
-  const confirmVisitors = (adults, children, newborns) => {
-    setVisitors([adults, children, newborns]);
-    console.log(visitors);
+  const confirmVisitors = useCallback((adult, children, newborn) => {
+    setVisitors([
+      { type: "adult", number: adult },
+      { type: "children", number: children },
+      { type: "newborn", number: newborn },
+    ]);
+  }, []);
+
+  useEffect(() => {
     let number = 0;
     visitors.forEach((visitor) => {
       number += visitor?.number;
     });
     setTotalVisitors(number);
-  };
+  }, [visitors, setTotalVisitors]);
 
   return (
     <div>
       <DialogVisitors
         totalVisitors={totalVisitors}
         openDialog={openDialog}
+        confirmVisitors={confirmVisitors}
         onHide={() => setOpenDialog(false)}
       />
       <Card

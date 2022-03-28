@@ -3,7 +3,8 @@
   grid-template-areas:
     "carousel  carousel carousel carousel"
     ".  cardBooking cardBooking ."
-    ".  services services .";
+    ".  services services ."
+    ". masonry masonry .";
 }
 
 .bgHome {
@@ -25,4 +26,8 @@
 
 .services {
   grid-area: services;
+}
+
+.masonry {
+  grid-area: masonry;
 }
