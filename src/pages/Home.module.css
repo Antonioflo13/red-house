@@ -1,9 +1,10 @@
 .container {
   display: grid;
   grid-template-areas:
-    "carousel  carousel carousel carousel"
-    ".  cardBooking cardBooking ."
-    ".  services services ."
+    "carousel carousel carousel carousel"
+    ". cardBooking cardBooking ."
+    ". services homeDetails ."
+    ". locationMap locationMap ."
     ". masonry masonry .";
 }
 
@@ -17,15 +18,23 @@
 
 .cardBookingContainer {
   grid-area: cardBooking;
-  grid-row-end: carousel;
-  margin-bottom: 2rem;
   justify-self: center;
-  align-self: end;
-  z-index: 2;
+  margin-bottom: 3rem;
 }
 
 .services {
   grid-area: services;
+  justify-self: center;
+}
+
+.homeDetails {
+  grid-area: homeDetails;
+  justify-self: center;
+}
+
+.locationMap {
+  grid-area: locationMap;
+  margin: 3rem 2rem 2rem 2rem;
 }
 
 .masonry {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Card } from "primereact/card";
 import { GMap } from "primereact/gmap";
 import { loadGoogleMaps, removeGoogleMaps } from "../js/GoogleMaps";
 
@@ -30,16 +31,18 @@ const LocationMap = () => {
   }, []);
 
   return (
-    <div>
-      {googleMapsReady && (
-        <GMap
-          overlays={overlays}
-          onMapReady={onMapReady}
-          options={options}
-          style={{ width: "100%", minHeight: "320px" }}
-        />
-      )}
-    </div>
+    <Card title="Dove ti troverai" className={`shadow-8`}>
+      <div>
+        {googleMapsReady && (
+          <GMap
+            overlays={overlays}
+            onMapReady={onMapReady}
+            options={options}
+            style={{ width: "100%", minHeight: "320px" }}
+          />
+        )}
+      </div>
+    </Card>
   );
 };
 

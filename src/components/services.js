@@ -1,33 +1,60 @@
 import { Card } from "primereact/card";
-import LocationMap from "./LocationMap";
+import { Button } from "primereact/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faKitchenSet, faTv, faWifi } from "@fortawesome/free-solid-svg-icons";
+import { ReactComponent as Hairdryer } from "../assets/icon/hairdryer.svg";
+import { ReactComponent as Fridge } from "../assets/icon/fridge.svg";
+import { ReactComponent as Oven } from "../assets/icon/oven.svg";
+import { ReactComponent as AirConditioner } from "../assets/icon/air-conditioner.svg";
+
+import styles from "./Services.module.css";
 
 const Services = () => {
+  const footer = (
+    <span>
+      <Button
+        label="Mostra altri servizi"
+        className="p-button-sm p-button-outlined p-button-secondary"
+      />
+    </span>
+  );
+
   return (
-    <Card title="I nostri servizi" className={`shadow-8`}>
-      <div>
-        <h3>Cosa troverai</h3>
-        <div>
-          <FontAwesomeIcon icon={faKitchenSet} className="mr-2" />
-          Cucina
+    <Card title="Cosa troverai" className={`shadow-8`} footer={footer}>
+      <div className={`${styles.services} flex`}>
+        <div className="m-1">
+          <div className="m-2">
+            <FontAwesomeIcon icon={faKitchenSet} className="mr-2" />
+            <span>Cucina</span>
+          </div>
+          <div className="flex align-items-center m-2">
+            <Hairdryer className="mr-2" />
+            <span>Asciugacapelli</span>
+          </div>
+          <div className="flex align-items-center m-2">
+            <Oven className="mr-2" />
+            <span>Forno</span>
+          </div>
+          <div className="m-2">
+            <FontAwesomeIcon icon={faWifi} className="mr-2" />
+            <span>Wi-fi</span>
+          </div>
+          <div className="m-2">
+            <FontAwesomeIcon icon={faTv} className="mr-2" />
+            <span>TV</span>
+          </div>
         </div>
-        <div>Asciugacapelli</div>
-        <div>
-          <FontAwesomeIcon icon="fa-solid fa-air-conditioner" />
-          Forno
+        <div className="m-1">
+          <div className="flex align-items-center m-2">
+            <Fridge className="mr-2" />
+            <span>Frigorifero</span>
+          </div>
+          <div className="flex align-items-center m-2">
+            <AirConditioner className="mr-2" />
+            <span>Aria condizionata</span>
+          </div>
         </div>
-        <div>
-          <FontAwesomeIcon icon={faWifi} className="mr-2" />
-          Wi-fi
-        </div>
-        <div>
-          <FontAwesomeIcon icon={faTv} className="mr-2" />
-          TV
-        </div>
-        <div>Frigorifero</div>
       </div>
-      <LocationMap />
     </Card>
   );
 };
