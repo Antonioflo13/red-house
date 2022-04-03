@@ -1,11 +1,13 @@
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faKitchenSet, faTv, faWifi } from "@fortawesome/free-solid-svg-icons";
+import { faWifi } from "@fortawesome/free-solid-svg-icons";
 import { ReactComponent as Hairdryer } from "../assets/icon/hairdryer.svg";
 import { ReactComponent as Fridge } from "../assets/icon/fridge.svg";
 import { ReactComponent as Oven } from "../assets/icon/oven.svg";
 import { ReactComponent as AirConditioner } from "../assets/icon/air-conditioner.svg";
+import { ReactComponent as Tv } from "../assets/icon/tv-screen.svg";
+import { ReactComponent as Kitchen } from "../assets/icon/kitchen.svg";
 
 import styles from "./Services.module.css";
 
@@ -24,7 +26,7 @@ const Services = () => {
       <div className={`${styles.services} flex`}>
         <div className="m-1">
           <div className="m-2">
-            <FontAwesomeIcon icon={faKitchenSet} className="mr-2" />
+            <Kitchen className="mr-2" />
             <span>Cucina</span>
           </div>
           <div className="flex align-items-center m-2">
@@ -40,7 +42,7 @@ const Services = () => {
             <span>Wi-fi</span>
           </div>
           <div className="m-2">
-            <FontAwesomeIcon icon={faTv} className="mr-2" />
+            <Tv className="mr-2" />
             <span>TV</span>
           </div>
         </div>

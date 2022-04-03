@@ -65,11 +65,9 @@ const Carousel = () => {
       options={{
         type: "fade",
         rewind: true,
-        width: "100vw",
-        heightRatio: 0.35,
+        width: "100%",
         autoplay: true,
         resetProgress: true,
-        pauseOnHover: true,
         interval: 4000,
         arrows: false,
         pagination: false,

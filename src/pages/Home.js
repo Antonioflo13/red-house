@@ -5,6 +5,8 @@ import HomeDetails from "../components/HomeDetails.js";
 import LocationMap from "../components/LocationMap";
 import Masonry from "../components/Masonry.js";
 
+import { ParallaxBanner } from "react-scroll-parallax";
+
 import styles from "./Home.module.css";
 
 const Home = () => {
@@ -25,6 +27,21 @@ const Home = () => {
         </div>
         <div className={styles.locationMap}>
           <LocationMap />
+        </div>
+        <div className={styles.parallax}>
+          <ParallaxBanner
+            style={{
+              height: "100vh",
+            }}
+            layers={[
+              {
+                image:
+                  "https://www.giovannicarrieri.com/photography/italy/ostuni/ostuni-via-panoramica.jpg",
+                speed: -15,
+              },
+            ]}
+            className="aspect-[2/1]"
+          ></ParallaxBanner>
         </div>
         <div className={styles.masonry}>
           <Masonry />

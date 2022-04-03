@@ -1,5 +1,6 @@
-import { Card } from "primereact/card";
+import React, { Component } from "react";
 import { Galleria } from "primereact/galleria";
+import { Card } from "primereact/card";
 
 import image1 from "../assets/img/carouselImages/img1.jpeg";
 import image2 from "../assets/img/carouselImages/img2.jpeg";
@@ -11,104 +12,122 @@ import image7 from "../assets/img/carouselImages/img7.jpeg";
 import image8 from "../assets/img/carouselImages/img8.jpeg";
 import image9 from "../assets/img/carouselImages/img9.jpeg";
 
-const HomeDetails = () => {
-  const images = [
-    {
-      id: "1",
-      url: image1,
-      postion: "center",
-    },
-    {
-      id: "2",
-      url: image2,
-      postion: "center",
-    },
-    {
-      id: "3",
-      url: image3,
-      postion: "center",
-    },
-    {
-      id: "4",
-      url: image4,
-      postion: "center",
-    },
-    {
-      id: "5",
-      url: image5,
-      postion: "center",
-    },
-    {
-      id: "6",
-      url: image6,
-      postion: "center",
-    },
-    {
-      id: "7",
-      url: image7,
-      postion: "center",
-    },
-    {
-      id: "8",
-      url: image8,
-      postion: "center",
-    },
-    {
-      id: "9",
-      url: image9,
-      postion: "center",
-    },
-  ];
+import styles from "./HomeDetails.module.css";
 
-  const responsiveOptions = [
-    {
-      breakpoint: "1024px",
-      numVisible: 5,
-    },
-    {
-      breakpoint: "768px",
-      numVisible: 3,
-    },
-    {
-      breakpoint: "560px",
-      numVisible: 1,
-    },
-  ];
+export default class HomeDetails extends Component {
+  constructor(props) {
+    super(props);
 
-  const itemTemplate = (item) => {
-    <img
-      src={item.url}
-      alt={item.alt}
-      style={{ width: "100%", display: "block" }}
-    />;
-  };
+    this.state = {
+      images: null,
+    };
 
-  const thumbnailTemplate = (item) => {
-    <img src={item.url} alt={item.alt} style={{ display: "block" }} />;
-  };
+    this.images = [
+      {
+        itemImageSrc: image1,
+        thumbnailImageSrc: image1,
+        title: "Ingresso",
+      },
+      {
+        itemImageSrc: image2,
+        thumbnailImageSrc: image2,
+      },
+      {
+        itemImageSrc: image3,
+        thumbnailImageSrc: image3,
+      },
+      {
+        itemImageSrc: image4,
+        thumbnailImageSrc: image4,
+      },
+      {
+        itemImageSrc: image5,
+        thumbnailImageSrc: image5,
+      },
+      {
+        itemImageSrc: image6,
+        thumbnailImageSrc: image6,
+      },
+      {
+        itemImageSrc: image7,
+        thumbnailImageSrc: image7,
+      },
+      {
+        itemImageSrc: image8,
+        thumbnailImageSrc: image8,
+      },
+      {
+        itemImageSrc: image9,
+        thumbnailImageSrc: image9,
+      },
+    ];
 
-  const caption = (item) => {
-    <div>
-      <h4 className="mb-2">{item.url}</h4>
-      <p>{item.alt}</p>
-    </div>;
-  };
+    this.responsiveOptions = [
+      {
+        breakpoint: "1024px",
+        numVisible: 5,
+      },
+      {
+        breakpoint: "768px",
+        numVisible: 3,
+      },
+      {
+        breakpoint: "560px",
+        numVisible: 1,
+      },
+    ];
 
-  return (
-    <Card title="Red House in dettaglio" className={`shadow-8`}>
+    this.itemTemplate = this.itemTemplate.bind(this);
+    this.thumbnailTemplate = this.thumbnailTemplate.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ images: this.images });
+  }
+
+  itemTemplate(item) {
+    return (
+      <img src={item.itemImageSrc} alt={item.alt} style={{ width: "100%" }} />
+    );
+  }
+
+  thumbnailTemplate(item) {
+    return (
+      <img
+        src={item.thumbnailImageSrc}
+        alt={item.alt}
+        className={styles.thumbnailTemplate}
+      />
+    );
+  }
+
+  caption(item) {
+    return (
+      <React.Fragment>
+        <h4 className="mb-2">{item.title}</h4>
+      </React.Fragment>
+    );
+  }
+
+  render() {
+    return (
       <div>
-        <Galleria
-          value={images}
-          responsiveOptions={responsiveOptions}
-          numVisible={5}
-          item={itemTemplate}
-          thumbnail={thumbnailTemplate}
-          caption={caption}
-          style={{ maxWidth: "640px" }}
-        />
+        <div className="card">
+          <Card title="Red House in dettaglio" className={`shadow-8`}>
+            <Galleria
+              value={this.state.images}
+              responsiveOptions={this.responsiveOptions}
+              numVisible={5}
+              style={{ maxWidth: "640px" }}
+              item={this.itemTemplate}
+              thumbnail={this.thumbnailTemplate}
+              caption={this.caption}
+              showIndicatorsOnItem={true}
+            />
+          </Card>
+          ;
+        </div>
       </div>
-    </Card>
-  );
-};
-
-export default HomeDetails;
+    );
+  }
+}

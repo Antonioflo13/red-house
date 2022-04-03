@@ -2,3 +2,10 @@
   font-size: 1.2rem;
   font-weight: bold;
 }
+
+@media (max-width: 991.98px) {
+  .services span {
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+}

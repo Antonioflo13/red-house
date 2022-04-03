@@ -1,0 +1,9 @@
+.thumbnailTemplate {
+  width: 100%;
+}
+
+@media (max-width: 778.98px) {
+  .thumbnailTemplate {
+    display: none;
+  }
+}

@@ -1,7 +1,9 @@
 .container {
-  display: grid;
-  grid-template-areas: "header header header header"
-                        "main main main main";
+  display: flex;
+  flex-direction: column;
+  grid-template-areas:
+    "header"
+    "main";
 }
 
 .header {

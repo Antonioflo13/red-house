@@ -1,3 +1,5 @@
+import { Parallax } from "react-scroll-parallax";
+
 import style from "./masonry.module.css";
 
 import image1 from "../assets/img/carouselImages/img1.jpeg";
@@ -63,11 +65,13 @@ const Masonry = () => {
           } `}
           key={image.id}
         >
+          <Parallax translateY={[-1, 1]} opacity={[-1, 10]} speed={5}>
           <img
             className={style.img}
             src={`${image.url}`}
             alt={`${image.url}`}
           />
+        </Parallax>
         </div>
       ))}
     </div>
