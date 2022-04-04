@@ -8,19 +8,16 @@ import styles from "./CardBooking.module.css";
 
 import BookingCalendar from "./BookingCalendar";
 import DialogVisitors from "./DialogVisitors";
+import DialogPayment from "./DialogPayment";
 
 const CardBooking = () => {
   const [visitors, setVisitors] = useState([]);
-  const [startReservation, setStartReservation] = useState();
   const [totalVisitors, setTotalVisitors] = useState();
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogPayment, setOpenDialogPayment] = useState(false);
+  const [reservationDates, setReservationDates] = useState(null);
+  const [avaiable, setAvaiable] = useState(true);
   const reservationsCollectionRef = collection(db, "reservations");
-
-  const footer = (
-    <span>
-      <Button style={{ width: "100%" }} label="Controlla la disponibilità" />
-    </span>
-  );
 
   const confirmVisitors = useCallback((adult, children, newborn) => {
     setVisitors([
@@ -30,6 +27,25 @@ const CardBooking = () => {
     ]);
   }, []);
 
+  const checkAvaiable = async () => {
+    const data = await getDocs(reservationsCollectionRef);
+    const checkIn = new Date(reservationDates.checkIn).getTime() / 1000;
+    const checkOut = new Date(reservationDates.checkOut).getTime() / 1000;
+    data.docs.forEach((reservation) => {
+      if (
+        (checkIn >= reservation.data().startReservation.seconds &&
+          checkIn <= reservation.data().endReservation.seconds) ||
+        (checkOut >= reservation.data().startReservation.seconds &&
+          checkOut <= reservation.data().endReservation.seconds)
+      ) {
+        setAvaiable(false);
+      } else {
+        setOpenDialogPayment(true);
+        setAvaiable(true);
+      }
+    });
+  };
+
   useEffect(() => {
     let number = 0;
     visitors.forEach((visitor) => {
@@ -38,20 +54,16 @@ const CardBooking = () => {
     setTotalVisitors(number);
   }, [visitors, setTotalVisitors]);
 
-  useEffect(() => {
-    const checkAvaiable = async () => {
-      const data = await getDocs(reservationsCollectionRef);
-      console.log(
-        data.docs.map((reservation) =>
-          console.log(
-            reservation.data()["end reservation"].seconds ===
-              new Date("2022/04/05 12:00:00").getTime() / 1000
-          )
-        )
-      );
-    };
-    checkAvaiable();
-  }, []);
+  const footer = (
+    <span>
+      <Button
+        style={{ width: "100%" }}
+        onClick={checkAvaiable}
+        disabled={visitors.length === 0}
+        label="Controlla la disponibilità"
+      />
+    </span>
+  );
 
   return (
     <div>
@@ -61,12 +73,20 @@ const CardBooking = () => {
         confirmVisitors={confirmVisitors}
         onHide={() => setOpenDialog(false)}
       />
+      <DialogPayment
+        openDialogPayment={openDialogPayment}
+        onHide={() => setOpenDialogPayment(false)}
+      />
       <Card
         title="Per i prezzi, aggiungi le date"
         className={`${styles.card}, shadow-8`}
         footer={footer}
       >
-        <BookingCalendar />
+        <BookingCalendar
+          confirmReservation={(reservationDate) =>
+            setReservationDates(reservationDate)
+          }
+        />
         {totalVisitors > 0 && (
           <div className="flex align-items-center py-2">
             <span>{totalVisitors} ospite</span>
@@ -88,6 +108,11 @@ const CardBooking = () => {
             className="my-3 p-button-outlined p-button-secondary"
             onClick={() => setOpenDialog(true)}
           />
+        )}
+        {!avaiable && (
+          <div className="text-pink-500">
+            Ci dispiace le date selezionate non sono disponibili.
+          </div>
         )}
       </Card>
     </div>

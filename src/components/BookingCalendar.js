@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar } from "primereact/calendar";
 // import { addLocale } from "primereact/api";
 
-const BookingCalendar = () => {
+const BookingCalendar = (props) => {
+  const { confirmReservation } = props;
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
-  
+
   let today = new Date();
+
+  useEffect(
+    () => confirmReservation({ checkIn, checkOut }),
+    [checkIn, checkOut]
+  );
 
   return (
     <div className="flex flex-column">
