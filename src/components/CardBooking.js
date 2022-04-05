@@ -16,7 +16,7 @@ const CardBooking = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
   const [reservationDates, setReservationDates] = useState(null);
-  const [avaiable, setAvaiable] = useState(true);
+  const [notAvaiable, setNotAvaiable] = useState(true);
   const reservationsCollectionRef = collection(db, "reservations");
 
   const confirmVisitors = useCallback((adult, children, newborn) => {
@@ -29,21 +29,87 @@ const CardBooking = () => {
 
   const checkAvaiable = async () => {
     const data = await getDocs(reservationsCollectionRef);
-    const checkIn = new Date(reservationDates.checkIn).getTime() / 1000;
-    const checkOut = new Date(reservationDates.checkOut).getTime() / 1000;
+    const checkIn = new Date(reservationDates.checkIn).setHours(0, 0, 0, 0);
+    const checkOut = new Date(reservationDates.checkOut).setHours(0, 0, 0, 0);
+    const dayInMilliseconds = 86400000;
+    let notAvaiableEntryDates = [];
+    let notAvaiableExitDates = [];
+    let notAvaiableDates = [];
+    let reservationDays = (checkOut - checkIn) / dayInMilliseconds
+    let checkInNotAvaiable;
+    let checkOutNotAvaiable;
     data.docs.forEach((reservation) => {
+      notAvaiableEntryDates.push(
+        reservation.data().startReservation.seconds * 1000
+      );
+      notAvaiableExitDates.push(
+        reservation.data().endReservation.seconds * 1000
+      );
+      notAvaiableDates.push(
+        reservation.data().startReservation.seconds * 1000,
+        reservation.data().endReservation.seconds * 1000
+      );
+
       if (
-        (checkIn >= reservation.data().startReservation.seconds &&
-          checkIn <= reservation.data().endReservation.seconds) ||
-        (checkOut >= reservation.data().startReservation.seconds &&
-          checkOut <= reservation.data().endReservation.seconds)
+        checkIn >= reservation.data().startReservation.seconds * 1000 &&
+        checkIn <= reservation.data().endReservation.seconds * 1000
       ) {
-        setAvaiable(false);
-      } else {
+        checkInNotAvaiable = true;
+      }
+      if (
+        checkOut >= reservation.data().startReservation.seconds * 1000 &&
+        checkOut <= reservation.data().endReservation.seconds * 1000
+      ) {
+        checkOutNotAvaiable = true;
+      }
+      if (!checkInNotAvaiable && !checkOutNotAvaiable) {
         setOpenDialogPayment(true);
-        setAvaiable(true);
+        setNotAvaiable(false);
       }
     });
+    if (checkInNotAvaiable) {
+      searchAvaiableDate(notAvaiableDates, checkIn, checkOut, "before", reservationDays);
+      setNotAvaiable(true);
+    }
+    if (checkOutNotAvaiable) {
+      searchAvaiableDate(notAvaiableDates, checkIn, checkOut, "after", reservationDays);
+      setNotAvaiable(true);
+    }
+  };
+
+  const searchAvaiableDate = (notAvaiableDates, checkInDate, checkOutDate,  operation, reservationDays) => {
+    const dayInMilliseconds = 86400000;
+    let newCheckInDate = checkInDate
+    let days = reservationDays
+    if(operation === 'before'){
+      newCheckInDate = newCheckInDate - dayInMilliseconds
+      if(notAvaiableDates.includes(newCheckInDate)){
+        searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'before', days)
+      } else {
+        let newCheckoutDate = newCheckInDate + days*dayInMilliseconds
+        if(notAvaiableDates.includes(newCheckoutDate)){
+          searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'before', days)
+        } else {
+          console.log('1 poss.')
+          console.log('NEW CHECKIN: ',  newCheckInDate)
+          console.log('NEW CHECKOUT: ', newCheckoutDate)
+        }
+      }
+    } else {
+      newCheckInDate = newCheckInDate + dayInMilliseconds
+      if(notAvaiableDates.includes(newCheckInDate)){
+        searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'after', days)
+      } else {
+        let newCheckoutDate = newCheckInDate + days*dayInMilliseconds
+        if(notAvaiableDates.includes(newCheckoutDate)){
+          searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'after', days)
+        } else {
+          console.log('2 poss.')
+          console.log('NEW CHECKIN: ',  newCheckInDate)
+          console.log('NEW CHECKOUT: ', newCheckoutDate)
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -109,7 +175,7 @@ const CardBooking = () => {
             onClick={() => setOpenDialog(true)}
           />
         )}
-        {!avaiable && (
+        {notAvaiable && (
           <div className="text-pink-500">
             Ci dispiace le date selezionate non sono disponibili.
           </div>
