@@ -16,7 +16,11 @@ const CardBooking = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
   const [reservationDates, setReservationDates] = useState(null);
-  const [notAvaiable, setNotAvaiable] = useState(true);
+  const [notAvaiable, setNotAvaiable] = useState();
+  const [prevNewCheckIn, setPrevNewCheckIn] = useState();
+  const [prevNewCheckOut, setPrevNewCheckOut] = useState();
+  const [nextNewCheckIn, setNextNewCheckIn] = useState();
+  const [nextNewCheckOut, setNextNewCheckOut] = useState();
   const reservationsCollectionRef = collection(db, "reservations");
 
   const confirmVisitors = useCallback((adult, children, newborn) => {
@@ -35,7 +39,7 @@ const CardBooking = () => {
     let notAvaiableEntryDates = [];
     let notAvaiableExitDates = [];
     let notAvaiableDates = [];
-    let reservationDays = (checkOut - checkIn) / dayInMilliseconds
+    let reservationDays = (checkOut - checkIn) / dayInMilliseconds;
     let checkInNotAvaiable;
     let checkOutNotAvaiable;
     data.docs.forEach((reservation) => {
@@ -68,48 +72,98 @@ const CardBooking = () => {
       }
     });
     if (checkInNotAvaiable) {
-      searchAvaiableDate(notAvaiableDates, checkIn, checkOut, "before", reservationDays);
+      searchAvaiableDate(
+        notAvaiableDates,
+        checkIn,
+        checkOut,
+        "before",
+        reservationDays
+      );
       setNotAvaiable(true);
     }
     if (checkOutNotAvaiable) {
-      searchAvaiableDate(notAvaiableDates, checkIn, checkOut, "after", reservationDays);
+      searchAvaiableDate(
+        notAvaiableDates,
+        checkIn,
+        checkOut,
+        "after",
+        reservationDays
+      );
       setNotAvaiable(true);
     }
   };
 
-  const searchAvaiableDate = (notAvaiableDates, checkInDate, checkOutDate,  operation, reservationDays) => {
+  const searchAvaiableDate = (
+    notAvaiableDates,
+    checkInDate,
+    checkOutDate,
+    operation,
+    reservationDays
+  ) => {
     const dayInMilliseconds = 86400000;
-    let newCheckInDate = checkInDate
-    let days = reservationDays
-    if(operation === 'before'){
-      newCheckInDate = newCheckInDate - dayInMilliseconds
-      if(notAvaiableDates.includes(newCheckInDate)){
-        searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'before', days)
+    let newCheckInDate = checkInDate;
+    let days = reservationDays;
+    if (operation === "before") {
+      newCheckInDate = newCheckInDate - dayInMilliseconds;
+      if (notAvaiableDates.includes(newCheckInDate)) {
+        searchAvaiableDate(
+          notAvaiableDates,
+          newCheckInDate,
+          checkOutDate,
+          "before",
+          days
+        );
       } else {
-        let newCheckoutDate = newCheckInDate + days*dayInMilliseconds
-        if(notAvaiableDates.includes(newCheckoutDate)){
-          searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'before', days)
+        let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
+        if (notAvaiableDates.includes(newCheckoutDate)) {
+          searchAvaiableDate(
+            notAvaiableDates,
+            newCheckInDate,
+            checkOutDate,
+            "before",
+            days
+          );
         } else {
-          console.log('1 poss.')
-          console.log('NEW CHECKIN: ',  newCheckInDate)
-          console.log('NEW CHECKOUT: ', newCheckoutDate)
+          setPrevNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
+          setPrevNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
         }
       }
     } else {
-      newCheckInDate = newCheckInDate + dayInMilliseconds
-      if(notAvaiableDates.includes(newCheckInDate)){
-        searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'after', days)
+      newCheckInDate = newCheckInDate + dayInMilliseconds;
+      if (notAvaiableDates.includes(newCheckInDate)) {
+        searchAvaiableDate(
+          notAvaiableDates,
+          newCheckInDate,
+          checkOutDate,
+          "after",
+          days
+        );
       } else {
-        let newCheckoutDate = newCheckInDate + days*dayInMilliseconds
-        if(notAvaiableDates.includes(newCheckoutDate)){
-          searchAvaiableDate(notAvaiableDates, newCheckInDate, checkOutDate, 'after', days)
+        let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
+        if (notAvaiableDates.includes(newCheckoutDate)) {
+          searchAvaiableDate(
+            notAvaiableDates,
+            newCheckInDate,
+            checkOutDate,
+            "after",
+            days
+          );
         } else {
-          console.log('2 poss.')
-          console.log('NEW CHECKIN: ',  newCheckInDate)
-          console.log('NEW CHECKOUT: ', newCheckoutDate)
+          setNextNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
+          setNextNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
         }
       }
     }
+  };
+
+  const cleanSearch = () => {
+    setVisitors([]);
+    setTotalVisitors(null);
+    setNotAvaiable(null);
+    setPrevNewCheckIn(null);
+    setPrevNewCheckOut(null);
+    setNextNewCheckIn(null);
+    setNextNewCheckOut(null);
   };
 
   useEffect(() => {
@@ -124,9 +178,13 @@ const CardBooking = () => {
     <span>
       <Button
         style={{ width: "100%" }}
-        onClick={checkAvaiable}
+        onClick={nextNewCheckIn || prevNewCheckIn ? cleanSearch : checkAvaiable}
         disabled={visitors.length === 0}
-        label="Controlla la disponibilità"
+        label={`${
+          nextNewCheckIn || prevNewCheckIn
+            ? "Esegui una nuova ricerca"
+            : "Controlla la disponibilità"
+        }`}
       />
     </span>
   );
@@ -145,41 +203,69 @@ const CardBooking = () => {
       />
       <Card
         title="Per i prezzi, aggiungi le date"
-        className={`${styles.card}, shadow-8`}
+        className="shadow-8"
         footer={footer}
       >
-        <BookingCalendar
-          confirmReservation={(reservationDate) =>
-            setReservationDates(reservationDate)
-          }
-        />
-        {totalVisitors > 0 && (
-          <div className="flex align-items-center py-2">
-            <span>{totalVisitors} ospite</span>
+        <div className={styles.card}>
+          <BookingCalendar
+            confirmReservation={(reservationDate) =>
+              setReservationDates(reservationDate)
+            }
+          />
+          {totalVisitors > 0 && (
+            <div className="flex align-items-center py-2">
+              <span>{totalVisitors} ospite</span>
+              <Button
+                icon="pi pi-pencil"
+                iconPos="right"
+                label="Modifica"
+                className="ml-2 p-button-sm p-button-danger p-button-text"
+                onClick={() => setOpenDialog(true)}
+              />
+            </div>
+          )}
+          {!totalVisitors && (
             <Button
-              icon="pi pi-pencil"
+              style={{ width: "100%" }}
+              icon="pi pi-plus-circle"
               iconPos="right"
-              label="Modifica"
-              className="ml-2 p-button-sm p-button-danger p-button-text"
+              label="Ospiti"
+              className="my-3 p-button-outlined p-button-secondary"
               onClick={() => setOpenDialog(true)}
             />
-          </div>
-        )}
-        {!totalVisitors && (
-          <Button
-            style={{ width: "100%" }}
-            icon="pi pi-plus-circle"
-            iconPos="right"
-            label="Ospiti"
-            className="my-3 p-button-outlined p-button-secondary"
-            onClick={() => setOpenDialog(true)}
-          />
-        )}
-        {notAvaiable && (
-          <div className="text-pink-500">
-            Ci dispiace le date selezionate non sono disponibili.
-          </div>
-        )}
+          )}
+          {notAvaiable && (
+            <div>
+              <div className="text-pink-700">
+                Ci dispiace le date selezionate non sono disponibili.
+              </div>
+              <div>
+                <div className="mt-2">
+                  Abbiamo cercato per te le date disponibili più vicine la tua
+                  ricerca.
+                </div>
+                <div className="flex justify-content-around mt-3">
+                  {prevNewCheckIn && prevNewCheckOut && (
+                    <Button
+                      label={`${prevNewCheckIn} - ${prevNewCheckOut}`}
+                      icon="pi pi-calendar"
+                      className="p-button-sm p-button-outlined"
+                      onClick={() => setOpenDialogPayment(true)}
+                    />
+                  )}
+                  {nextNewCheckIn && nextNewCheckOut && (
+                    <Button
+                      label={`${nextNewCheckIn} - ${nextNewCheckOut}`}
+                      icon="pi pi-calendar"
+                      className="p-button-sm p-button-outlined"
+                      onClick={() => setOpenDialogPayment(true)}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </Card>
     </div>
   );
