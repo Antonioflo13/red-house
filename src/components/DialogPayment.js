@@ -5,10 +5,11 @@ import { db } from "../firebase-config";
 import { collection, getDocs } from "firebase/firestore";
 
 import DialogVisitorsFooter from "./DialogVisitorsFooter";
+import PaymentCheckOut from "./PaymentCheckout";
 
 const DialogPayment = (props) => {
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
-  const [price, setPrice] =useState(null);
+  const [price, setPrice] = useState(null);
   const [totalPrice, setTotalPrice] = useState(null);
   const pricesCollectionRef = collection(db, "prices");
 
@@ -29,8 +30,8 @@ const DialogPayment = (props) => {
   };
 
   const calculateTotalPrice = async () => {
-    setTotalPrice(await price * props.reservationRange);
-  }
+    setTotalPrice((await price) * props.reservationRange);
+  };
 
   const onHide = () => {
     props.onHide();
@@ -42,6 +43,7 @@ const DialogPayment = (props) => {
       header="Conferma e paga"
       visible={openDialogPayment}
       style={{ width: "30vw" }}
+      breakpoints={{ "960px": "75vw" }}
       footer={DialogVisitorsFooter}
       onHide={onHide}
     >
@@ -69,7 +71,9 @@ const DialogPayment = (props) => {
           <div>
             <div className="font-bold">Dettaglio Prezzo</div>
             <div className="flex justify-content-between">
-              <div>{price} x {props.reservationRange}</div>
+              <div>
+                {price} x {props.reservationRange}
+              </div>
               <div>$</div>
             </div>
             <div className="flex justify-content-between">
@@ -83,6 +87,7 @@ const DialogPayment = (props) => {
             </div>
           </div>
         </div>
+        <PaymentCheckOut />
       </div>
     </Dialog>
   );

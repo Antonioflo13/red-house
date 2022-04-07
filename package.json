@@ -9,6 +9,8 @@
     "@fortawesome/react-fontawesome": "^0.1.18",
     "@react-google-maps/api": "^2.7.0",
     "@splidejs/react-splide": "^0.6.20",
+    "@stripe/react-stripe-js": "^1.7.1",
+    "@stripe/stripe-js": "^1.27.0",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",

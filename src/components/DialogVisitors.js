@@ -71,6 +71,7 @@ const DialogVisitors = (props) => {
       header="Ospiti"
       visible={openDialog}
       style={{ width: "30vw" }}
+      breakpoints={{ "960px": "75vw" }}
       footer={DialogVisitorsFooter}
       onHide={onHide}
       confirmVisitors={visitors}
