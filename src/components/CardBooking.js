@@ -18,6 +18,7 @@ const CardBooking = () => {
   const [reservationDates, setReservationDates] = useState(null);
   const [notAvaiable, setNotAvaiable] = useState();
   const [selectedDates, setSelectedDates] = useState(null);
+  const [reservationRange ,setReservationRange] = useState(null);
   const [prevNewCheckIn, setPrevNewCheckIn] = useState();
   const [prevNewCheckOut, setPrevNewCheckOut] = useState();
   const [nextNewCheckIn, setNextNewCheckIn] = useState();
@@ -41,6 +42,7 @@ const CardBooking = () => {
     let notAvaiableExitDates = [];
     let notAvaiableDates = [];
     let reservationDays = (checkOut - checkIn) / dayInMilliseconds;
+    setReservationRange((checkOut - checkIn) / dayInMilliseconds);
     let checkInNotAvaiable;
     let checkOutNotAvaiable;
     data.docs.forEach((reservation) => {
@@ -206,6 +208,7 @@ const CardBooking = () => {
         openDialogPayment={openDialogPayment}
         totalVisitors={totalVisitors}
         selectedDates={selectedDates}
+        reservationRange={reservationRange}
         onHide={() => setOpenDialogPayment(false)}
       />
       <Card
