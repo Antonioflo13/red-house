@@ -17,6 +17,7 @@ const CardBooking = () => {
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
   const [reservationDates, setReservationDates] = useState(null);
   const [notAvaiable, setNotAvaiable] = useState();
+  const [selectedDates, setSelectedDates] = useState(null);
   const [prevNewCheckIn, setPrevNewCheckIn] = useState();
   const [prevNewCheckOut, setPrevNewCheckOut] = useState();
   const [nextNewCheckIn, setNextNewCheckIn] = useState();
@@ -69,6 +70,10 @@ const CardBooking = () => {
       if (!checkInNotAvaiable && !checkOutNotAvaiable) {
         setOpenDialogPayment(true);
         setNotAvaiable(false);
+        setSelectedDates({
+          checkIn: new Date(checkIn).toLocaleDateString(),
+          checkOut: new Date(checkOut).toLocaleDateString(),
+        });
       }
     });
     if (checkInNotAvaiable) {
@@ -199,6 +204,8 @@ const CardBooking = () => {
       />
       <DialogPayment
         openDialogPayment={openDialogPayment}
+        totalVisitors={totalVisitors}
+        selectedDates={selectedDates}
         onHide={() => setOpenDialogPayment(false)}
       />
       <Card
@@ -214,7 +221,11 @@ const CardBooking = () => {
           />
           {totalVisitors > 0 && (
             <div className="flex align-items-center py-2">
-              <span>{totalVisitors} ospite</span>
+              <span>{`${
+                totalVisitors === 1
+                  ? `${totalVisitors} ospite`
+                  : `${totalVisitors} ospiti`
+              }`}</span>
               <Button
                 icon="pi pi-pencil"
                 iconPos="right"
@@ -235,12 +246,12 @@ const CardBooking = () => {
             />
           )}
           {notAvaiable && (
-            <div>
+            <div className="flex flex-column align-items-center">
               <div className="text-pink-700">
                 Ci dispiace le date selezionate non sono disponibili.
               </div>
               <div>
-                <div className="mt-2">
+                <div className="mt-2 ">
                   Abbiamo cercato per te le date disponibili più vicine la tua
                   ricerca.
                 </div>
@@ -250,7 +261,13 @@ const CardBooking = () => {
                       label={`${prevNewCheckIn} - ${prevNewCheckOut}`}
                       icon="pi pi-calendar"
                       className="p-button-sm p-button-outlined"
-                      onClick={() => setOpenDialogPayment(true)}
+                      onClick={() => {
+                        setOpenDialogPayment(true);
+                        setSelectedDates({
+                          checkIn: prevNewCheckIn,
+                          checkOut: prevNewCheckOut,
+                        });
+                      }}
                     />
                   )}
                   {nextNewCheckIn && nextNewCheckOut && (
@@ -258,7 +275,13 @@ const CardBooking = () => {
                       label={`${nextNewCheckIn} - ${nextNewCheckOut}`}
                       icon="pi pi-calendar"
                       className="p-button-sm p-button-outlined"
-                      onClick={() => setOpenDialogPayment(true)}
+                      onClick={() => {
+                        setOpenDialogPayment(true);
+                        setSelectedDates({
+                          checkIn: nextNewCheckIn,
+                          checkOut: nextNewCheckOut,
+                        });
+                      }}
                     />
                   )}
                 </div>

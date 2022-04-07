@@ -25,6 +25,9 @@ const DialogPayment = (props) => {
       onHide={onHide}
     >
       <div className="flex flex-column">Payment</div>
+      <div>{props.totalVisitors}</div>
+      <div>{props.selectedDates?.checkIn}</div>
+      <div>{props.selectedDates?.checkOut}</div>
     </Dialog>
   );
 };
