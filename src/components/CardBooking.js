@@ -186,7 +186,7 @@ const CardBooking = () => {
       <Button
         style={{ width: "100%" }}
         onClick={nextNewCheckIn || prevNewCheckIn ? cleanSearch : checkAvaiable}
-        disabled={(!reservationDates?.checkIn && !reservationDates?.checkOut) || visitors.length === 0 }
+        disabled={(!reservationDates?.checkIn || !reservationDates?.checkOut) || visitors.length === 0 }
         label={`${
           nextNewCheckIn || prevNewCheckIn
             ? "Esegui una nuova ricerca"
