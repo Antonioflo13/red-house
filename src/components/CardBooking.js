@@ -186,7 +186,7 @@ const CardBooking = () => {
       <Button
         style={{ width: "100%" }}
         onClick={nextNewCheckIn || prevNewCheckIn ? cleanSearch : checkAvaiable}
-        disabled={visitors.length === 0}
+        disabled={(!reservationDates?.checkIn && !reservationDates?.checkOut) || visitors.length === 0 }
         label={`${
           nextNewCheckIn || prevNewCheckIn
             ? "Esegui una nuova ricerca"
@@ -224,11 +224,11 @@ const CardBooking = () => {
           />
           {totalVisitors > 0 && (
             <div className="flex align-items-center py-2">
-              <span>{`${
+              <div className="w-full">{`${
                 totalVisitors === 1
                   ? `${totalVisitors} ospite`
                   : `${totalVisitors} ospiti`
-              }`}</span>
+              }`}</div>
               <Button
                 icon="pi pi-pencil"
                 iconPos="right"

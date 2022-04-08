@@ -61,8 +61,13 @@ export default function CheckoutForm() {
         // Make sure to change this to your payment completion page
         return_url: "http://localhost:3000",
         receipt_email: email,
+        billing_details: {
+          name: 'Jenny Rosen',
+        },
       },
     });
+
+    console.log(email);
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
@@ -80,12 +85,13 @@ export default function CheckoutForm() {
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
+      <label htmlFor="email" className="font-bold">Email</label>
       <input
         id="email"
         type="text"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter email address"
+        placeholder="Inserisci indrizzo email"
       />
       <PaymentElement id="payment-element" />
       <button disabled={isLoading || !stripe || !elements} id="submit">

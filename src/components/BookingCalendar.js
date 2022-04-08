@@ -40,7 +40,7 @@ const BookingCalendar = (props) => {
             id="checkOut"
             dateFormat="dd/mm/yy"
             placeholder="Aggiungi una data"
-            minDate={today}
+            minDate={today && checkIn}
             value={checkOut}
             disabled={!checkIn}
             showButtonBar
