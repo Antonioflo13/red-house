@@ -16,9 +16,6 @@ const DialogPayment = (props) => {
   useEffect(() => {
     setOpenDialogPayment(props.openDialogPayment);
     getPrice();
-    // results.forEach(element => {
-    //   console.log(element);
-    // });
   }, [props.openDialogPayment]);
 
   const getPrice = async () => {
@@ -42,12 +39,12 @@ const DialogPayment = (props) => {
     <Dialog
       header="Conferma e paga"
       visible={openDialogPayment}
-      style={{ width: "30vw" }}
+      style={{ width: "50vw" }}
       breakpoints={{ "960px": "75vw" }}
       footer={DialogVisitorsFooter}
       onHide={onHide}
     >
-      <div>
+      <div className="flex">
         <div className="flex justify-content-between">
           <div>
             <div>
