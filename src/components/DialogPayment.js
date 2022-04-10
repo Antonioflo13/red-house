@@ -4,7 +4,7 @@ import { Dialog } from "primereact/dialog";
 import { db } from "../firebase-config";
 import { collection, getDocs } from "firebase/firestore";
 
-import PaymentCheckOut from "./PaymentCheckout";
+import CheckOutStripe from "./CheckOutStripe";
 
 const DialogPayment = (props) => {
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
@@ -20,7 +20,7 @@ const DialogPayment = (props) => {
   const getPrice = async () => {
     const data = await getDocs(pricesCollectionRef);
     data.docs.forEach((price) => {
-      setPrice(price.data().price);
+      setPrice(price.data().priceNumber);
     });
     calculateTotalPrice();
   };
@@ -38,12 +38,12 @@ const DialogPayment = (props) => {
     <Dialog
       header="Conferma e paga"
       visible={openDialogPayment}
-      style={{ width: "30vw" }}
+      style={{ width: "35vw" }}
       breakpoints={{ "960px": "75vw" }}
       onHide={onHide}
     >
       <div>
-        <PaymentCheckOut
+        <CheckOutStripe
           selectedDates={props.selectedDates}
           totalVisitors={props.totalVisitors}
           price={price}

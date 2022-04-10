@@ -1,7 +1,8 @@
-import styles from './SummaryReservation.module.css'
+import styles from "./SummaryReservation.module.css";
 
 const SummaryReservation = (props) => {
-  const {totalVisitors, selectedDates, reservationRange, totalPrice, price} = props;
+  const { totalVisitors, selectedDates, reservationRange, totalPrice, price } =
+    props;
 
   return (
     <div className={styles.container}>
@@ -33,13 +34,13 @@ const SummaryReservation = (props) => {
           <div>{totalPrice.toFixed(2)} €</div>
         </div>
         <div className="flex justify-content-between">
-          <div className='mr-6'>Tasse e costi di soggiorno</div>
+          <div className="mr-6">Tasse e costi di soggiorno</div>
           <div>2 €</div>
         </div>
         <hr />
         <div className="flex justify-content-between">
-          <div className='font-bold'>totale(EUR)</div>
-          <div className='font-bold'>{totalPrice.toFixed(2)} €</div>
+          <div className="font-bold">Totale(EUR)</div>
+          <div className="font-bold">{totalPrice.toFixed(2)} €</div>
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ const PaymentCheckOut = (props) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        price: totalPrice ? totalPrice * 100 : 1,
+        price: totalPrice ? totalPrice * 100 : 100,
         description: `${selectedDates?.checkIn} - ${selectedDates?.checkOut}`,
       }),
     })

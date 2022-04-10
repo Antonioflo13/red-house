@@ -5,13 +5,21 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
+import { db } from "../firebase-config";
+import { collection, addDoc } from "firebase/firestore";
+
 export default function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
+  const reservationsCollectionRef = collection(db, "reservations");
 
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const createReservation = async (visitorsData) => {
+    await addDoc(reservationsCollectionRef, { visitorsData });
+  };
 
   useEffect(() => {
     if (!stripe) {
@@ -55,19 +63,16 @@ export default function CheckoutForm() {
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
-        receipt_email: email,
-        billing_details: {
-          name: 'Jenny Rosen',
+    const { error } = await stripe
+      .confirmPayment({
+        elements,
+        confirmParams: {
+          // Make sure to change this to your payment completion page
+          return_url: "http://localhost:3000/grid",
+          receipt_email: email,
         },
-      },
-    });
-
-    console.log(email);
+      })
+      .then((response) => createReservation(response));
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
@@ -85,7 +90,9 @@ export default function CheckoutForm() {
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
-      <label htmlFor="email" className="font-bold">Email</label>
+      <label htmlFor="email" className="font-bold">
+        Email
+      </label>
       <input
         id="email"
         type="text"

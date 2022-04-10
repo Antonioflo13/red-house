@@ -18,7 +18,7 @@ const CardBooking = () => {
   const [reservationDates, setReservationDates] = useState(null);
   const [notAvaiable, setNotAvaiable] = useState();
   const [selectedDates, setSelectedDates] = useState(null);
-  const [reservationRange ,setReservationRange] = useState(null);
+  const [reservationRange, setReservationRange] = useState(null);
   const [prevNewCheckIn, setPrevNewCheckIn] = useState();
   const [prevNewCheckOut, setPrevNewCheckOut] = useState();
   const [nextNewCheckIn, setNextNewCheckIn] = useState();
@@ -74,7 +74,9 @@ const CardBooking = () => {
         setNotAvaiable(false);
         setSelectedDates({
           checkIn: new Date(checkIn).toLocaleDateString(),
+          checkInMillisecond: checkIn,
           checkOut: new Date(checkOut).toLocaleDateString(),
+          checkOutMillisecond: checkOut,
         });
       }
     });
@@ -186,7 +188,11 @@ const CardBooking = () => {
       <Button
         style={{ width: "100%" }}
         onClick={nextNewCheckIn || prevNewCheckIn ? cleanSearch : checkAvaiable}
-        disabled={(!reservationDates?.checkIn || !reservationDates?.checkOut) || visitors.length === 0 }
+        disabled={
+          !reservationDates?.checkIn ||
+          !reservationDates?.checkOut ||
+          visitors.length === 0
+        }
         label={`${
           nextNewCheckIn || prevNewCheckIn
             ? "Esegui una nuova ricerca"
