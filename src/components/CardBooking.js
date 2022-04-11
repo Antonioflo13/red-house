@@ -37,14 +37,25 @@ const CardBooking = () => {
 
   const checkAvaiableCalendarDate = async () => {
     const data = await getDocs(reservationsCollectionRef);
+    const dayInMilliseconds = 86400000;
     let reservations = [];
     data.docs.forEach((reservation) => {
-      reservations.push(
-        {startReservation:reservation.data().startReservation.seconds * 1000, endReservation:reservation.data().endReservation.seconds * 1000}
-      )
-    })
-    setCalendarNotAvaiableDates(reservations);
-  }
+      reservations.push([
+        reservation.data().startReservation.seconds * 1000,
+        reservation.data().endReservation.seconds * 1000,
+      ]);
+    });
+    let NotAvaible = [];
+    for (let key of reservations) {
+      for (let index = key[0]; index <= key[1]; index++) {
+        NotAvaible.push(
+          new Date(key[0]),
+          new Date((index += dayInMilliseconds))
+        );
+      }
+    }
+    setCalendarNotAvaiableDates(NotAvaible);
+  };
 
   const checkAvaiable = async () => {
     const data = await getDocs(reservationsCollectionRef);
