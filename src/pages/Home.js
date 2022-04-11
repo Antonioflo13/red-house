@@ -26,7 +26,7 @@ const Home = () => {
           <HomeDetails />
         </div>
         <div className={styles.locationMap}>
-          <LocationMap />
+          {/* <LocationMap /> */}
         </div>
         <div className={styles.parallax}>
           <ParallaxBanner

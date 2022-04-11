@@ -17,6 +17,8 @@ const CardBooking = () => {
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
   const [reservationDates, setReservationDates] = useState(null);
   const [notAvaiable, setNotAvaiable] = useState();
+  const [calendarNotAvaiableDates, setCalendarNotAvaiableDates] =
+    useState(null);
   const [selectedDates, setSelectedDates] = useState(null);
   const [reservationRange, setReservationRange] = useState(null);
   const [prevNewCheckIn, setPrevNewCheckIn] = useState();
@@ -32,6 +34,17 @@ const CardBooking = () => {
       { type: "newborn", number: newborn },
     ]);
   }, []);
+
+  const checkAvaiableCalendarDate = async () => {
+    const data = await getDocs(reservationsCollectionRef);
+    let reservations = [];
+    data.docs.forEach((reservation) => {
+      reservations.push(
+        {startReservation:reservation.data().startReservation.seconds * 1000, endReservation:reservation.data().endReservation.seconds * 1000}
+      )
+    })
+    setCalendarNotAvaiableDates(reservations);
+  }
 
   const checkAvaiable = async () => {
     const data = await getDocs(reservationsCollectionRef);
@@ -183,6 +196,10 @@ const CardBooking = () => {
     setTotalVisitors(number);
   }, [visitors, setTotalVisitors]);
 
+  useEffect(() => {
+    checkAvaiableCalendarDate();
+  }, []);
+
   const footer = (
     <span>
       <Button
@@ -224,6 +241,7 @@ const CardBooking = () => {
       >
         <div className={styles.card}>
           <BookingCalendar
+            calendarNotAvaiableDates={calendarNotAvaiableDates}
             confirmReservation={(reservationDate) =>
               setReservationDates(reservationDate)
             }
