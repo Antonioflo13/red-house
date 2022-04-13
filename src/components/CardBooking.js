@@ -62,132 +62,154 @@ const CardBooking = () => {
     const checkIn = new Date(reservationDates.checkIn).setHours(0, 0, 0, 0);
     const checkOut = new Date(reservationDates.checkOut).setHours(0, 0, 0, 0);
     const dayInMilliseconds = 86400000;
-    let notAvaiableEntryDates = [];
-    let notAvaiableExitDates = [];
-    let notAvaiableDates = [];
+    // let notAvaiableEntryDates = [];
+    // let notAvaiableExitDates = [];
+    // let notAvaiableDates = [];
+    let reservations = [];
     let reservationDays = (checkOut - checkIn) / dayInMilliseconds;
     setReservationRange((checkOut - checkIn) / dayInMilliseconds);
-    let checkInNotAvaiable;
-    let checkOutNotAvaiable;
     data.docs.forEach((reservation) => {
-      notAvaiableEntryDates.push(
-        reservation.data().startReservation.seconds * 1000
-      );
-      notAvaiableExitDates.push(
-        reservation.data().endReservation.seconds * 1000
-      );
-      notAvaiableDates.push(
+      reservations.push([
         reservation.data().startReservation.seconds * 1000,
-        reservation.data().endReservation.seconds * 1000
-      );
-
-      if (
-        checkIn >= reservation.data().startReservation.seconds * 1000 &&
-        checkIn <= reservation.data().endReservation.seconds * 1000
-      ) {
-        checkInNotAvaiable = true;
-      }
-      if (
-        checkOut >= reservation.data().startReservation.seconds * 1000 &&
-        checkOut <= reservation.data().endReservation.seconds * 1000
-      ) {
-        checkOutNotAvaiable = true;
-      }
-      if (!checkInNotAvaiable && !checkOutNotAvaiable) {
-        setOpenDialogPayment(true);
-        setNotAvaiable(false);
-        setSelectedDates({
-          checkIn: new Date(checkIn).toLocaleDateString(),
-          checkInMillisecond: checkIn,
-          checkOut: new Date(checkOut).toLocaleDateString(),
-          checkOutMillisecond: checkOut,
-        });
-      }
+        reservation.data().endReservation.seconds * 1000,
+      ]);
     });
-    if (checkInNotAvaiable) {
-      searchAvaiableDate(
-        notAvaiableDates,
-        checkIn,
-        checkOut,
-        "before",
-        reservationDays
-      );
-      setNotAvaiable(true);
+    let NotAvaibleInMilliseconds = [];
+    for (let key of reservations) {
+      for (let index = key[0]; index <= key[1]; index++) {
+        NotAvaibleInMilliseconds.push(key[0], (index += dayInMilliseconds));
+      }
     }
-    if (checkOutNotAvaiable) {
-      searchAvaiableDate(
-        notAvaiableDates,
-        checkIn,
-        checkOut,
-        "after",
-        reservationDays
-      );
+    if (
+      NotAvaibleInMilliseconds.includes(checkIn) &&
+      NotAvaibleInMilliseconds.includes(checkOut)
+    ) {
       setNotAvaiable(true);
+    } else {
+      setNotAvaiable(false);
+      setOpenDialogPayment(true);
     }
+    // let checkInNotAvaiable;
+    // let checkOutNotAvaiable;
+    // data.docs.forEach((reservation) => {
+    //   notAvaiableEntryDates.push(
+    //     reservation.data().startReservation.seconds * 1000
+    //   );
+    //   notAvaiableExitDates.push(
+    //     reservation.data().endReservation.seconds * 1000
+    //   );
+    //   notAvaiableDates.push(
+    //     reservation.data().startReservation.seconds * 1000,
+    //     reservation.data().endReservation.seconds * 1000
+    //   );
+
+    //   if (
+    //     checkIn >= reservation.data().startReservation.seconds * 1000 &&
+    //     checkIn <= reservation.data().endReservation.seconds * 1000
+    //   ) {
+    //     checkInNotAvaiable = true;
+    //   }
+    //   if (
+    //     checkOut >= reservation.data().startReservation.seconds * 1000 &&
+    //     checkOut <= reservation.data().endReservation.seconds * 1000
+    //   ) {
+    //     checkOutNotAvaiable = true;
+    //   }
+    //   if (!checkInNotAvaiable && !checkOutNotAvaiable) {
+    //     setOpenDialogPayment(true);
+    //     setNotAvaiable(false);
+    //     setSelectedDates({
+    //       checkIn: new Date(checkIn).toLocaleDateString(),
+    //       checkInMillisecond: checkIn,
+    //       checkOut: new Date(checkOut).toLocaleDateString(),
+    //       checkOutMillisecond: checkOut,
+    //     });
+    //   }
+    // });
+    // if (checkInNotAvaiable) {
+    //   searchAvaiableDate(
+    //     notAvaiableDates,
+    //     checkIn,
+    //     checkOut,
+    //     "before",
+    //     reservationDays
+    //   );
+    //   setNotAvaiable(true);
+    // }
+    // if (checkOutNotAvaiable) {
+    //   searchAvaiableDate(
+    //     notAvaiableDates,
+    //     checkIn,
+    //     checkOut,
+    //     "after",
+    //     reservationDays
+    //   );
+    //   setNotAvaiable(true);
+    // }
   };
 
-  const searchAvaiableDate = (
-    notAvaiableDates,
-    checkInDate,
-    checkOutDate,
-    operation,
-    reservationDays
-  ) => {
-    const dayInMilliseconds = 86400000;
-    let newCheckInDate = checkInDate;
-    let days = reservationDays;
-    if (operation === "before") {
-      newCheckInDate = newCheckInDate - dayInMilliseconds;
-      if (notAvaiableDates.includes(newCheckInDate)) {
-        searchAvaiableDate(
-          notAvaiableDates,
-          newCheckInDate,
-          checkOutDate,
-          "before",
-          days
-        );
-      } else {
-        let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
-        if (notAvaiableDates.includes(newCheckoutDate)) {
-          searchAvaiableDate(
-            notAvaiableDates,
-            newCheckInDate,
-            checkOutDate,
-            "before",
-            days
-          );
-        } else {
-          setPrevNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
-          setPrevNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
-        }
-      }
-    } else {
-      newCheckInDate = newCheckInDate + dayInMilliseconds;
-      if (notAvaiableDates.includes(newCheckInDate)) {
-        searchAvaiableDate(
-          notAvaiableDates,
-          newCheckInDate,
-          checkOutDate,
-          "after",
-          days
-        );
-      } else {
-        let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
-        if (notAvaiableDates.includes(newCheckoutDate)) {
-          searchAvaiableDate(
-            notAvaiableDates,
-            newCheckInDate,
-            checkOutDate,
-            "after",
-            days
-          );
-        } else {
-          setNextNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
-          setNextNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
-        }
-      }
-    }
-  };
+  // const searchAvaiableDate = (
+  //   notAvaiableDates,
+  //   checkInDate,
+  //   checkOutDate,
+  //   operation,
+  //   reservationDays
+  // ) => {
+  //   const dayInMilliseconds = 86400000;
+  //   let newCheckInDate = checkInDate;
+  //   let days = reservationDays;
+  //   if (operation === "before") {
+  //     newCheckInDate = newCheckInDate - dayInMilliseconds;
+  //     if (notAvaiableDates.includes(newCheckInDate)) {
+  //       searchAvaiableDate(
+  //         notAvaiableDates,
+  //         newCheckInDate,
+  //         checkOutDate,
+  //         "before",
+  //         days
+  //       );
+  //     } else {
+  //       let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
+  //       if (notAvaiableDates.includes(newCheckoutDate)) {
+  //         searchAvaiableDate(
+  //           notAvaiableDates,
+  //           newCheckInDate,
+  //           checkOutDate,
+  //           "before",
+  //           days
+  //         );
+  //       } else {
+  //         setPrevNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
+  //         setPrevNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
+  //       }
+  //     }
+  //   } else {
+  //     newCheckInDate = newCheckInDate + dayInMilliseconds;
+  //     if (notAvaiableDates.includes(newCheckInDate)) {
+  //       searchAvaiableDate(
+  //         notAvaiableDates,
+  //         newCheckInDate,
+  //         checkOutDate,
+  //         "after",
+  //         days
+  //       );
+  //     } else {
+  //       let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
+  //       if (notAvaiableDates.includes(newCheckoutDate)) {
+  //         searchAvaiableDate(
+  //           notAvaiableDates,
+  //           newCheckInDate,
+  //           checkOutDate,
+  //           "after",
+  //           days
+  //         );
+  //       } else {
+  //         setNextNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
+  //         setNextNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
+  //       }
+  //     }
+  //   }
+  // };
 
   const cleanSearch = () => {
     setVisitors([]);
@@ -308,7 +330,7 @@ const CardBooking = () => {
                       }}
                     />
                   )}
-                  {nextNewCheckIn && nextNewCheckOut && (
+                  {notAvaiable && (
                     <Button
                       label={`${nextNewCheckIn} - ${nextNewCheckOut}`}
                       icon="pi pi-calendar"
