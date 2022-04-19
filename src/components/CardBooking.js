@@ -103,8 +103,10 @@ const CardBooking = () => {
         2,
         "month"
       );
-      let today = moment();
-      if (!moment(prevDates.newCheckInDate).isBefore(today)) {
+      let today = moment().format("DD/MM/YYYY");
+      console.log(prevDates.newCheckInDate);
+      console.log(today);
+      if (moment(prevDates.newCheckInDate).isAfter(today)) {
         setPrevNewCheckIn(prevDates.newCheckInDate);
         setPrevNewCheckOut(prevDates.newCheckOutDate);
       }
@@ -115,7 +117,6 @@ const CardBooking = () => {
     } else {
       setNotAvaiable(false);
       setOpenDialogPayment(true);
-      console.log(checkIn);
       setSelectedDates({
         checkIn: new Date(checkIn).toLocaleDateString(),
         checkInMillisecond: checkIn,
