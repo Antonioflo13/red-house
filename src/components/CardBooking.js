@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { useCallback, useEffect, useState } from "react";
 import { db } from "../firebase-config";
 import { collection, getDocs } from "firebase/firestore";
+import moment from "moment";
 
 import styles from "./CardBooking.module.css";
 
@@ -16,7 +17,7 @@ const CardBooking = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
   const [reservationDates, setReservationDates] = useState(null);
-  const [notAvaiable, setNotAvaiable] = useState();
+  const [notAvaiable, setNotAvaiable] = useState(false);
   const [calendarNotAvaiableDates, setCalendarNotAvaiableDates] =
     useState(null);
   const [selectedDates, setSelectedDates] = useState(null);
@@ -57,159 +58,115 @@ const CardBooking = () => {
     setCalendarNotAvaiableDates(NotAvaible);
   };
 
-  const checkAvaiable = async () => {
+  const getDates = async () => {
     const data = await getDocs(reservationsCollectionRef);
-    const checkIn = new Date(reservationDates.checkIn).setHours(0, 0, 0, 0);
-    const checkOut = new Date(reservationDates.checkOut).setHours(0, 0, 0, 0);
-    const dayInMilliseconds = 86400000;
-    // let notAvaiableEntryDates = [];
-    // let notAvaiableExitDates = [];
-    // let notAvaiableDates = [];
     let reservations = [];
-    let reservationDays = (checkOut - checkIn) / dayInMilliseconds;
-    setReservationRange((checkOut - checkIn) / dayInMilliseconds);
+    let allNotAvaibleDatesInMs = [];
+    const dayInMilliseconds = 86400000;
+
     data.docs.forEach((reservation) => {
       reservations.push([
         reservation.data().startReservation.seconds * 1000,
         reservation.data().endReservation.seconds * 1000,
       ]);
     });
-    let NotAvaibleInMilliseconds = [];
-    for (let key of reservations) {
-      for (let index = key[0]; index <= key[1]; index++) {
-        NotAvaibleInMilliseconds.push(key[0], (index += dayInMilliseconds));
+    for (let reservation of reservations) {
+      for (let index = reservation[0]; index <= reservation[1]; index++) {
+        allNotAvaibleDatesInMs.push((index += dayInMilliseconds));
       }
     }
-    if (
-      NotAvaibleInMilliseconds.includes(checkIn) &&
-      NotAvaibleInMilliseconds.includes(checkOut)
-    ) {
+    allNotAvaibleDatesInMs.sort((a, b) => a - b);
+    checkAvaiable(allNotAvaibleDatesInMs);
+  };
+
+  const checkAvaiable = (allNotAvaibleDatesInMs) => {
+    const checkIn = new Date(reservationDates.checkIn).setHours(0, 0, 0, 0);
+    const checkOut = new Date(reservationDates.checkOut).setHours(0, 0, 0, 0);
+    const dayInMilliseconds = 86400000;
+    let reservationRange = (checkOut - checkIn) / dayInMilliseconds;
+    setReservationRange(reservationRange + 1);
+
+    const check = checkDates(checkIn, checkOut, allNotAvaibleDatesInMs);
+    if (check) {
       setNotAvaiable(true);
+      let prevDates = searchAvaiableDates(
+        "subtract",
+        reservationRange + 1,
+        allNotAvaibleDatesInMs
+      );
+      let nextDates = searchAvaiableDates(
+        "add",
+        reservationRange + 1,
+        allNotAvaibleDatesInMs
+      );
+      let highValue = moment(nextDates.newCheckInDate, "DD/MM/YYYY").add(
+        2,
+        "month"
+      );
+      let today = moment();
+      if (!moment(prevDates.newCheckInDate).isBefore(today)) {
+        setPrevNewCheckIn(prevDates.newCheckInDate);
+        setPrevNewCheckOut(prevDates.newCheckOutDate);
+      }
+      if (!moment(nextDates.newCheckInDate).isAfter(highValue)) {
+        setNextNewCheckIn(nextDates.newCheckInDate);
+        setNextNewCheckOut(nextDates.newCheckOutDate);
+      }
     } else {
       setNotAvaiable(false);
       setOpenDialogPayment(true);
+      console.log(checkIn);
+      setSelectedDates({
+        checkIn: new Date(checkIn).toLocaleDateString(),
+        checkInMillisecond: checkIn,
+        checkOut: new Date(checkOut).toLocaleDateString(),
+        checkOutMillisecond: checkOut,
+      });
     }
-    // let checkInNotAvaiable;
-    // let checkOutNotAvaiable;
-    // data.docs.forEach((reservation) => {
-    //   notAvaiableEntryDates.push(
-    //     reservation.data().startReservation.seconds * 1000
-    //   );
-    //   notAvaiableExitDates.push(
-    //     reservation.data().endReservation.seconds * 1000
-    //   );
-    //   notAvaiableDates.push(
-    //     reservation.data().startReservation.seconds * 1000,
-    //     reservation.data().endReservation.seconds * 1000
-    //   );
-
-    //   if (
-    //     checkIn >= reservation.data().startReservation.seconds * 1000 &&
-    //     checkIn <= reservation.data().endReservation.seconds * 1000
-    //   ) {
-    //     checkInNotAvaiable = true;
-    //   }
-    //   if (
-    //     checkOut >= reservation.data().startReservation.seconds * 1000 &&
-    //     checkOut <= reservation.data().endReservation.seconds * 1000
-    //   ) {
-    //     checkOutNotAvaiable = true;
-    //   }
-    //   if (!checkInNotAvaiable && !checkOutNotAvaiable) {
-    //     setOpenDialogPayment(true);
-    //     setNotAvaiable(false);
-    //     setSelectedDates({
-    //       checkIn: new Date(checkIn).toLocaleDateString(),
-    //       checkInMillisecond: checkIn,
-    //       checkOut: new Date(checkOut).toLocaleDateString(),
-    //       checkOutMillisecond: checkOut,
-    //     });
-    //   }
-    // });
-    // if (checkInNotAvaiable) {
-    //   searchAvaiableDate(
-    //     notAvaiableDates,
-    //     checkIn,
-    //     checkOut,
-    //     "before",
-    //     reservationDays
-    //   );
-    //   setNotAvaiable(true);
-    // }
-    // if (checkOutNotAvaiable) {
-    //   searchAvaiableDate(
-    //     notAvaiableDates,
-    //     checkIn,
-    //     checkOut,
-    //     "after",
-    //     reservationDays
-    //   );
-    //   setNotAvaiable(true);
-    // }
   };
 
-  // const searchAvaiableDate = (
-  //   notAvaiableDates,
-  //   checkInDate,
-  //   checkOutDate,
-  //   operation,
-  //   reservationDays
-  // ) => {
-  //   const dayInMilliseconds = 86400000;
-  //   let newCheckInDate = checkInDate;
-  //   let days = reservationDays;
-  //   if (operation === "before") {
-  //     newCheckInDate = newCheckInDate - dayInMilliseconds;
-  //     if (notAvaiableDates.includes(newCheckInDate)) {
-  //       searchAvaiableDate(
-  //         notAvaiableDates,
-  //         newCheckInDate,
-  //         checkOutDate,
-  //         "before",
-  //         days
-  //       );
-  //     } else {
-  //       let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
-  //       if (notAvaiableDates.includes(newCheckoutDate)) {
-  //         searchAvaiableDate(
-  //           notAvaiableDates,
-  //           newCheckInDate,
-  //           checkOutDate,
-  //           "before",
-  //           days
-  //         );
-  //       } else {
-  //         setPrevNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
-  //         setPrevNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
-  //       }
-  //     }
-  //   } else {
-  //     newCheckInDate = newCheckInDate + dayInMilliseconds;
-  //     if (notAvaiableDates.includes(newCheckInDate)) {
-  //       searchAvaiableDate(
-  //         notAvaiableDates,
-  //         newCheckInDate,
-  //         checkOutDate,
-  //         "after",
-  //         days
-  //       );
-  //     } else {
-  //       let newCheckoutDate = newCheckInDate + days * dayInMilliseconds;
-  //       if (notAvaiableDates.includes(newCheckoutDate)) {
-  //         searchAvaiableDate(
-  //           notAvaiableDates,
-  //           newCheckInDate,
-  //           checkOutDate,
-  //           "after",
-  //           days
-  //         );
-  //       } else {
-  //         setNextNewCheckIn(new Date(newCheckInDate).toLocaleDateString());
-  //         setNextNewCheckOut(new Date(newCheckoutDate).toLocaleDateString());
-  //       }
-  //     }
-  //   }
-  // };
+  const searchAvaiableDates = (
+    MathOperation,
+    reservationRange,
+    allNotAvaibleDatesInMs
+  ) => {
+    let newCheckIn;
+    let newCheckOut;
+    if (MathOperation === "subtract") {
+      newCheckIn = moment(Math.min(...allNotAvaibleDatesInMs), "x")
+        .subtract(reservationRange, "days")
+        .format("x");
+      newCheckOut = moment(Math.min(...allNotAvaibleDatesInMs), "x")
+        .subtract(1, "days")
+        .format("x");
+    }
+    if (MathOperation === "add") {
+      newCheckOut = moment(Math.max(...allNotAvaibleDatesInMs), "x")
+        .add(reservationRange, "days")
+        .format("x");
+      newCheckIn = moment(Math.max(...allNotAvaibleDatesInMs), "x")
+        .add(1, "days")
+        .format("x");
+    }
+    const check = checkDates(newCheckIn, newCheckOut, allNotAvaibleDatesInMs);
+
+    if (check) {
+      searchAvaiableDates(newCheckIn, newCheckOut, allNotAvaibleDatesInMs);
+    } else {
+      const newCheckInDate = moment(newCheckIn, "x").format("DD/MM/YYYY");
+      const newCheckOutDate = moment(newCheckOut, "x").format("DD/MM/YYYY");
+      return { newCheckInDate, newCheckOutDate };
+    }
+  };
+
+  const checkDates = (checkIn, checkOut, allNotAvaibleDatesInMs) => {
+    for (const allNotAvaibleDateInMs of allNotAvaibleDatesInMs) {
+      const reservationDates = moment(allNotAvaibleDateInMs, "x");
+      if (reservationDates.isBetween(checkIn, checkOut)) {
+        return true;
+      }
+    }
+  };
 
   const cleanSearch = () => {
     setVisitors([]);
@@ -237,7 +194,7 @@ const CardBooking = () => {
     <span>
       <Button
         style={{ width: "100%" }}
-        onClick={nextNewCheckIn || prevNewCheckIn ? cleanSearch : checkAvaiable}
+        onClick={nextNewCheckIn || prevNewCheckIn ? cleanSearch : getDates}
         disabled={
           !reservationDates?.checkIn ||
           !reservationDates?.checkOut ||
@@ -325,12 +282,20 @@ const CardBooking = () => {
                         setOpenDialogPayment(true);
                         setSelectedDates({
                           checkIn: prevNewCheckIn,
+                          checkInMillisecond: moment(
+                            prevNewCheckIn,
+                            "DD/MM/YYYY"
+                          ).format("x"),
                           checkOut: prevNewCheckOut,
+                          checkOutMillisecond: moment(
+                            prevNewCheckOut,
+                            "DD/MM/YYYY"
+                          ).format("x"),
                         });
                       }}
                     />
                   )}
-                  {notAvaiable && (
+                  {nextNewCheckIn && nextNewCheckOut && (
                     <Button
                       label={`${nextNewCheckIn} - ${nextNewCheckOut}`}
                       icon="pi pi-calendar"
@@ -339,7 +304,15 @@ const CardBooking = () => {
                         setOpenDialogPayment(true);
                         setSelectedDates({
                           checkIn: nextNewCheckIn,
+                          checkInMillisecond: moment(
+                            nextNewCheckIn,
+                            "DD/MM/YYYY"
+                          ).format("x"),
                           checkOut: nextNewCheckOut,
+                          checkOutMillisecond: moment(
+                            nextNewCheckOut,
+                            "DD/MM/YYYY"
+                          ).format("x"),
                         });
                       }}
                     />
