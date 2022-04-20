@@ -10,6 +10,7 @@ import styles from "./CardBooking.module.css";
 import BookingCalendar from "./BookingCalendar";
 import DialogVisitors from "./DialogVisitors";
 import DialogPayment from "./DialogPayment";
+import { faL } from "@fortawesome/free-solid-svg-icons";
 
 const CardBooking = () => {
   const [visitors, setVisitors] = useState([]);
@@ -92,12 +93,14 @@ const CardBooking = () => {
       let prevDates = searchAvaiableDates(
         "subtract",
         reservationRange + 1,
-        allNotAvaibleDatesInMs
+        allNotAvaibleDatesInMs,
+        checkIn
       );
       let nextDates = searchAvaiableDates(
         "add",
         reservationRange + 1,
-        allNotAvaibleDatesInMs
+        allNotAvaibleDatesInMs,
+        checkOut
       );
       let highValue = moment(nextDates.newCheckInDate, "DD/MM/YYYY").add(
         2,
@@ -128,30 +131,36 @@ const CardBooking = () => {
   const searchAvaiableDates = (
     MathOperation,
     reservationRange,
-    allNotAvaibleDatesInMs
+    allNotAvaibleDatesInMs,
+    date
   ) => {
     let newCheckIn;
     let newCheckOut;
     if (MathOperation === "subtract") {
-      newCheckIn = moment(Math.min(...allNotAvaibleDatesInMs), "x")
+      newCheckIn = moment(date, "x")
         .subtract(reservationRange, "days")
         .format("x");
-      newCheckOut = moment(Math.min(...allNotAvaibleDatesInMs), "x")
-        .subtract(1, "days")
-        .format("x");
+      newCheckOut = moment(date, "x").subtract(1, "days").format("x");
     }
     if (MathOperation === "add") {
-      newCheckOut = moment(Math.max(...allNotAvaibleDatesInMs), "x")
-        .add(reservationRange, "days")
-        .format("x");
-      newCheckIn = moment(Math.max(...allNotAvaibleDatesInMs), "x")
-        .add(1, "days")
-        .format("x");
+      newCheckOut = moment(date, "x").add(reservationRange, "days").format("x");
+      newCheckIn = moment(date, "x").add(1, "days").format("x");
     }
     const check = checkDates(newCheckIn, newCheckOut, allNotAvaibleDatesInMs);
-
+    console.log(date);
     if (check) {
-      searchAvaiableDates(newCheckIn, newCheckOut, allNotAvaibleDatesInMs);
+      searchAvaiableDates(
+        "subtract",
+        reservationRange,
+        allNotAvaibleDatesInMs,
+        date
+      );
+      searchAvaiableDates(
+        "add",
+        reservationRange,
+        allNotAvaibleDatesInMs,
+        date
+      );
     } else {
       const newCheckInDate = moment(newCheckIn, "x").format("DD/MM/YYYY");
       const newCheckOutDate = moment(newCheckOut, "x").format("DD/MM/YYYY");
@@ -161,11 +170,17 @@ const CardBooking = () => {
 
   const checkDates = (checkIn, checkOut, allNotAvaibleDatesInMs) => {
     for (const allNotAvaibleDateInMs of allNotAvaibleDatesInMs) {
-      const reservationDates = moment(allNotAvaibleDateInMs, "x");
-      if (reservationDates.isBetween(checkIn, checkOut)) {
+      if (moment(allNotAvaibleDateInMs).isBetween(checkIn, checkOut)) {
+        return true;
+      }
+      if (
+        moment(allNotAvaibleDateInMs).isSame(checkIn) ||
+        moment(allNotAvaibleDateInMs).isSame(checkOut)
+      ) {
         return true;
       }
     }
+    return false;
   };
 
   const cleanSearch = () => {
