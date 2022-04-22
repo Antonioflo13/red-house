@@ -1,8 +1,18 @@
-import React, { useState } from "react";
-import { Form, Field } from "react-final-form";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+
+import { db, auth } from "../firebase-config";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
+
+import { useForm, Controller } from "react-hook-form";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Password } from "primereact/password";
+import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
@@ -11,43 +21,83 @@ import "./LoginPanel.css";
 const LoginPanel = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [formData, setFormData] = useState({});
-
-  const validate = (data) => {
-    let errors = {};
-
-    if (!data.name) {
-      errors.name = "Name is required.";
-    }
-
-    if (!data.email) {
-      errors.email = "Email is required.";
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(data.email)) {
-      errors.email = "Invalid email address. E.g. example@email.com";
-    }
-
-    if (!data.password) {
-      errors.password = "Password is required.";
-    }
-
-    if (!data.accept) {
-      errors.accept = "You need to agree to the terms and conditions.";
-    }
-
-    return errors;
+  const [routePage, setRoutePage] = useState(null);
+  const defaultValues = {
+    name: "",
+    email: "",
+    password: "",
+    accept: false,
   };
+  const hostsCollectionRef = collection(db, "hosts");
+  const location = useLocation();
 
-  const onSubmit = (data, form) => {
-    console.log(data);
+  useEffect(
+    () =>
+      location.pathname === "/login"
+        ? setRoutePage("login")
+        : setRoutePage("signup"),
+    [location]
+  );
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+  } = useForm({ defaultValues });
+
+  const onSubmit = (data) => {
     setFormData(data);
-    setShowMessage(true);
 
-    form.restart();
+    signUporSignIn(data);
+
+    reset();
   };
 
-  const isFormFieldValid = (meta) => !!(meta.touched && meta.error);
-  const getFormErrorMessage = (meta) => {
+  const signUp = (data) => {
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then((response) => {
+        setHostInDb(data, response.user.uid);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const signIn = (data) => {
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const setHostInDb = async (infoHost, uid) => {
+    await setDoc(doc(db, "hosts", uid), {
+      name: infoHost.name,
+      email: infoHost.email,
+    })
+      .then(() => {
+        setShowMessage(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const signUporSignIn = async (data) => {
+    if (routePage === "signup") {
+      signUp(data);
+    } else {
+      signIn(data);
+    }
+  };
+
+  const getFormErrorMessage = (name) => {
     return (
-      isFormFieldValid(meta) && <small className="p-error">{meta.error}</small>
+      errors[name] && <small className="p-error">{errors[name].message}</small>
     );
   };
 
@@ -86,7 +136,7 @@ const LoginPanel = () => {
         breakpoints={{ "960px": "80vw" }}
         style={{ width: "30vw" }}
       >
-        <div className="flex align-items-center flex-column pt-6 px-3">
+        <div className="flex justify-content-center flex-column pt-6 px-3">
           <i
             className="pi pi-check-circle"
             style={{ fontSize: "5rem", color: "var(--green-500)" }}
@@ -102,99 +152,128 @@ const LoginPanel = () => {
 
       <div className="flex justify-content-center">
         <div className="card">
-          <Form
-            onSubmit={onSubmit}
-            initialValues={{
-              name: "",
-              email: "",
-              password: "",
-            }}
-            validate={validate}
-            render={({ handleSubmit }) => (
-              <form onSubmit={handleSubmit} className="p-fluid">
-                <h3>Register</h3>
-                <Field
-                  name="name"
-                  render={({ input, meta }) => (
-                    <div>
-                      <span>
-                        <label
-                          htmlFor="name"
-                          className={classNames({
-                            "p-error": isFormFieldValid(meta),
-                          })}
-                        >
-                          Name
-                        </label>
-                        <InputText
-                          id="name"
-                          {...input}
-                          autoFocus
-                          className={classNames({
-                            "p-invalid": isFormFieldValid(meta),
-                          })}
-                        />
-                      </span>
-                    </div>
-                  )}
-                />
-                <Field
-                  name="email"
-                  render={({ input, meta }) => (
-                    <div>
-                      <label
-                        htmlFor="email"
+          <h5 className="text-center">Register</h5>
+          <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
+            {routePage === "signup" && (
+              <div className="field">
+                <span className="p-float-label">
+                  <Controller
+                    name="name"
+                    control={control}
+                    rules={{ required: "Name is required." }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        autoFocus
                         className={classNames({
-                          "p-error": isFormFieldValid(meta),
+                          "p-invalid": fieldState.invalid,
                         })}
-                      >
-                        Email
-                      </label>
-                      <span className="p-input-icon-right">
-                        <i className="pi pi-envelope" />
-                        <InputText
-                          id="email"
-                          {...input}
-                          className={classNames({
-                            "p-invalid": isFormFieldValid(meta),
-                          })}
-                        />
-                      </span>
-                    </div>
-                  )}
-                />
-                <Field
-                  name="password"
-                  render={({ input, meta }) => (
-                    <div className="field">
-                      <span>
-                        <label
-                          htmlFor="password"
-                          className={classNames({
-                            "p-error": isFormFieldValid(meta),
-                          })}
-                        >
-                          Password
-                        </label>
-                        <Password
-                          id="password"
-                          {...input}
-                          toggleMask
-                          className={classNames({
-                            "p-invalid": isFormFieldValid(meta),
-                          })}
-                          header={passwordHeader}
-                          footer={passwordFooter}
-                        />
-                      </span>
-                      {getFormErrorMessage(meta)}
-                    </div>
-                  )}
-                />
-                <Button type="submit" label="Submit" className="mt-2" />
-              </form>
+                      />
+                    )}
+                  />
+                  <label
+                    htmlFor="name"
+                    className={classNames({ "p-error": errors.name })}
+                  >
+                    Name*
+                  </label>
+                </span>
+                {getFormErrorMessage("name")}
+              </div>
             )}
-          />
+            <div className="field">
+              <span className="p-float-label p-input-icon-right">
+                <i className="pi pi-envelope" />
+                <Controller
+                  name="email"
+                  control={control}
+                  rules={{
+                    required: "Email is required.",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                      message: "Invalid email address. E.g. example@email.com",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <InputText
+                      id={field.name}
+                      {...field}
+                      className={classNames({
+                        "p-invalid": fieldState.invalid,
+                      })}
+                    />
+                  )}
+                />
+                <label
+                  htmlFor="email"
+                  className={classNames({ "p-error": !!errors.email })}
+                >
+                  Email*
+                </label>
+              </span>
+              {getFormErrorMessage("email")}
+            </div>
+            <div className="field">
+              <span className="p-float-label">
+                <Controller
+                  name="password"
+                  control={control}
+                  rules={{ required: "Password is required." }}
+                  render={({ field, fieldState }) => (
+                    <Password
+                      id={field.name}
+                      {...field}
+                      toggleMask
+                      className={classNames({
+                        "p-invalid": fieldState.invalid,
+                      })}
+                      header={passwordHeader}
+                      footer={passwordFooter}
+                    />
+                  )}
+                />
+                <label
+                  htmlFor="password"
+                  className={classNames({ "p-error": errors.password })}
+                >
+                  Password*
+                </label>
+              </span>
+              {getFormErrorMessage("password")}
+            </div>
+            {routePage === "signup" && (
+              <div className="field-checkbox">
+                <Controller
+                  name="accept"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field, fieldState }) => (
+                    <Checkbox
+                      inputId={field.name}
+                      onChange={(e) => field.onChange(e.checked)}
+                      checked={field.value}
+                      className={classNames({
+                        "p-invalid": fieldState.invalid,
+                      })}
+                    />
+                  )}
+                />
+                <label
+                  htmlFor="accept"
+                  className={classNames({ "p-error": errors.accept })}
+                >
+                  I agree to the terms and conditions*
+                </label>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              label={routePage === "signup" ? "Signup" : "Login"}
+              className="mt-2"
+            />
+          </form>
         </div>
       </div>
     </div>

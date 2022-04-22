@@ -15,17 +15,20 @@ function App() {
     <div className="App">
       <ParallaxProvider>
         <div className={styles.container}>
-          {location.pathname !== "/success" && location.pathname !== "/login" && (
-            <div className={styles.header}>
-              <Header />
-            </div>
-          )}
+          {location.pathname !== "/success" &&
+            location.pathname !== "/login" &&
+            location.pathname !== "/signup" && (
+              <div className={styles.header}>
+                <Header />
+              </div>
+            )}
           <div className={styles.main}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/grid" element={<Grid />} />
               <Route path="/success" element={<SuccessPayment />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Login />} />
             </Routes>
           </div>
         </div>
