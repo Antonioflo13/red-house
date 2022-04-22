@@ -1,0 +1,57 @@
+.container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .bgMain {
+    background-image: url("https://i.pinimg.com/originals/2e/fe/c2/2efec261efc0e9b0d87ca985fe25c910.jpg");
+    background-blend-mode: overlay;
+    background-color: rgba(211, 211, 211, 0.2);
+  }
+  
+  .containerLoginCard {
+    margin: 2rem;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.06), 0px 7px 9px rgba(0, 0, 0, 0.12), 0px 20px 25px -8px rgba(0, 0, 0, 0.18);
+  }
+
+  .loginCard {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .imageCard {
+    width: 80px;
+  }
+
+  .titleCard {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgb(230, 230, 230);
+    font-size: 2rem;
+    font-weight: bold;
+    font-variant: small-caps;
+  }
+
+  .mainCard {
+    font-size: 1.3rem;
+  }
+
+  .mainCard span {
+   font-weight: 600;
+  }
+  
+  @media (max-width: 991.98px) {
+    .titleCard {
+      font-size: 1rem;
+    }
+    .mainCard {
+        font-size: 0.9rem;
+    }
+    .imageCard {
+        width: 50px;
+    }
+  }

@@ -10,7 +10,6 @@ import styles from "./CardBooking.module.css";
 import BookingCalendar from "./BookingCalendar";
 import DialogVisitors from "./DialogVisitors";
 import DialogPayment from "./DialogPayment";
-import { faL } from "@fortawesome/free-solid-svg-icons";
 
 const CardBooking = () => {
   const [visitors, setVisitors] = useState([]);
