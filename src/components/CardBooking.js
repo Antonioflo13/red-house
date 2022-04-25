@@ -262,7 +262,7 @@ const CardBooking = () => {
                 icon="pi pi-pencil"
                 iconPos="right"
                 label="Modifica"
-                className="ml-2 p-button-sm p-button-danger p-button-text"
+                className="ml-2 p-button-sm p-button-danger p-button-text w-full"
                 onClick={() => setOpenDialog(true)}
               />
             </div>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import { Button } from "primereact/button";
+
 import SummaryReservation from "./SummaryReservation";
 
 const ProductDisplay = (props) => (
@@ -17,7 +19,7 @@ const ProductDisplay = (props) => (
       action={`http://localhost:3001/create-checkout-session?q=${props.reservationRange}&sr=${props.selectedDates?.checkInMillisecond}&er=${props.selectedDates?.checkOutMillisecond}`}
       method="POST"
     >
-      <button type="submit">Vai al Checkout</button>
+      <Button type="submit" label="Vai al Checkout" className="mt-2 w-full" />
     </form>
   </section>
 );

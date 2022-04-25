@@ -3,16 +3,22 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
+import { store } from "./store";
+import { Provider } from "react-redux";
+
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "./index.css";
+import "./assets/css/red_house/override.scss";
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );

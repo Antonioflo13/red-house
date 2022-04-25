@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login } from "../store/auth";
 
 import { db, auth } from "../firebase-config";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 
@@ -16,27 +19,105 @@ import { Checkbox } from "primereact/checkbox";
 import { Dialog } from "primereact/dialog";
 import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
+
+import Logo from "../assets/img/Logo.png";
 import "./LoginPanel.css";
 
 const LoginPanel = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [formData, setFormData] = useState({});
   const [routePage, setRoutePage] = useState(null);
+  const [wrong, setWrong] = useState(false);
+  const [wrongMessage, setWrongMessage] = useState("");
+  const [headerAuthPanel, setHeaderAuthPanel] = useState("");
+  const [submitLabelButton, setSubmitLabelButton] = useState("");
+  const [mainDialog, setMainDialog] = useState(null);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const hostsCollectionRef = collection(db, "hosts");
+
   const defaultValues = {
     name: "",
     email: "",
     password: "",
     accept: false,
   };
-  const hostsCollectionRef = collection(db, "hosts");
-  const location = useLocation();
 
-  useEffect(
-    () =>
-      location.pathname === "/login"
-        ? setRoutePage("login")
-        : setRoutePage("signup"),
-    [location]
+  const passwordHeader = <h6>Pick a password</h6>;
+  const passwordFooter = (
+    <React.Fragment>
+      <Divider />
+      <p className="mt-2">Suggestions</p>
+      <ul className="pl-2 ml-2 mt-0" style={{ lineHeight: "1.5" }}>
+        <li>At least one lowercase</li>
+        <li>At least one uppercase</li>
+        <li>At least one numeric</li>
+        <li>Minimum 8 characters</li>
+      </ul>
+    </React.Fragment>
+  );
+
+  const dialogSignupMain = (
+    <React.Fragment>
+      <div className="flex justify-content-center align-items-center flex-column pt-6 px-3">
+        <i
+          className="pi pi-check-circle"
+          style={{ fontSize: "2rem", color: "var(--green-500)" }}
+        ></i>
+        <h5 className="py-2">Registration Successful!</h5>
+        <div className="text-center">
+          Your account is registered under name <b>{formData.email}</b>.
+        </div>
+      </div>
+    </React.Fragment>
+  );
+
+  const dialogResetPasswordMain = (
+    <React.Fragment>
+      <div className="flex justify-content-center align-items-center flex-column pt-6 px-3">
+        <i
+          className="pi pi-check-circle"
+          style={{ fontSize: "2rem", color: "var(--green-500)" }}
+        ></i>
+        <h5 className="py-2">Reset request password Successful!</h5>
+        <div className="text-center">
+          You will receive an email at <b>{formData.email}</b> for reset
+          password instructions.
+        </div>
+      </div>
+    </React.Fragment>
+  );
+
+  const dialogWrongProcess = (
+    <React.Fragment>
+      <div className="flex justify-content-center align-items-center flex-column pt-6 px-3">
+        <i
+          className="pi pi-times-circle"
+          style={{ fontSize: "2rem", color: "rgb(194, 79, 79)" }}
+        ></i>
+        <h5 className="py-2">Warning!</h5>
+        <div className="text-center">
+          Something went wrong please try again later.
+        </div>
+      </div>
+    </React.Fragment>
+  );
+
+  const dialogFooter = (
+    <div className="flex justify-content-center">
+      <Button
+        label="OK"
+        className="p-button-text"
+        autoFocus
+        onClick={() => {
+          setShowMessage(false);
+          reset();
+        }}
+      />
+    </div>
   );
 
   const {
@@ -46,12 +127,47 @@ const LoginPanel = () => {
     reset,
   } = useForm({ defaultValues });
 
+  useEffect(() => {
+    switch (location.pathname) {
+      case "/signin":
+        setRoutePage("signin");
+        setHeaderAuthPanel();
+        setSubmitLabelButton("Sign in to Red House");
+        break;
+      case "/signup":
+        setRoutePage("signup");
+        setHeaderAuthPanel("Register");
+        setSubmitLabelButton("Sign up to Red House");
+        break;
+      case "/password-reset":
+        setRoutePage("password-reset");
+        setHeaderAuthPanel("Reset your password");
+        setSubmitLabelButton("Send password reset email");
+        break;
+      default:
+        break;
+    }
+  }, [location.pathname]);
+
   const onSubmit = (data) => {
     setFormData(data);
+    hadlerSubmit(data);
+  };
 
-    signUporSignIn(data);
-
-    reset();
+  const hadlerSubmit = (data) => {
+    switch (routePage) {
+      case "signup":
+        signUp(data);
+        break;
+      case "signin":
+        signIn(data);
+        break;
+      case "password-reset":
+        resetPassword(data);
+        break;
+      default:
+        break;
+    }
   };
 
   const signUp = (data) => {
@@ -67,9 +183,34 @@ const LoginPanel = () => {
   const signIn = (data) => {
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then((response) => {
-        console.log(response);
+        const authInfo = {
+          token: response.user.accessToken,
+          expired: response._tokenResponse.expiresIn,
+          email: response.user.email,
+          uid: response.user.uid,
+        };
+        dispatch(login(authInfo));
       })
       .catch((error) => {
+        if (error.message.includes("wrong-password")) {
+          setWrongMessage("Wrong password, Retry!");
+          setWrong(true);
+        }
+        if (error.message.includes("user-not-found")) {
+          setWrong(true);
+          setWrongMessage("I think you have to register first!");
+        }
+      });
+  };
+  const resetPassword = (data) => {
+    sendPasswordResetEmail(auth, data.email)
+      .then(() => {
+        setShowMessage(true);
+        setMainDialog(dialogResetPasswordMain);
+      })
+      .catch((error) => {
+        setShowMessage(true);
+        setMainDialog(dialogWrongProcess);
         console.log(error);
       });
   };
@@ -81,18 +222,13 @@ const LoginPanel = () => {
     })
       .then(() => {
         setShowMessage(true);
+        setMainDialog(dialogSignupMain);
       })
       .catch((error) => {
+        setShowMessage(true);
+        setMainDialog(dialogWrongProcess);
         console.log(error);
       });
-  };
-
-  const signUporSignIn = async (data) => {
-    if (routePage === "signup") {
-      signUp(data);
-    } else {
-      signIn(data);
-    }
   };
 
   const getFormErrorMessage = (name) => {
@@ -100,30 +236,6 @@ const LoginPanel = () => {
       errors[name] && <small className="p-error">{errors[name].message}</small>
     );
   };
-
-  const dialogFooter = (
-    <div className="flex justify-content-center">
-      <Button
-        label="OK"
-        className="p-button-text"
-        autoFocus
-        onClick={() => setShowMessage(false)}
-      />
-    </div>
-  );
-  const passwordHeader = <h6>Pick a password</h6>;
-  const passwordFooter = (
-    <React.Fragment>
-      <Divider />
-      <p className="mt-2">Suggestions</p>
-      <ul className="pl-2 ml-2 mt-0" style={{ lineHeight: "1.5" }}>
-        <li>At least one lowercase</li>
-        <li>At least one uppercase</li>
-        <li>At least one numeric</li>
-        <li>Minimum 8 characters</li>
-      </ul>
-    </React.Fragment>
-  );
 
   return (
     <div className="form-demo">
@@ -136,25 +248,15 @@ const LoginPanel = () => {
         breakpoints={{ "960px": "80vw" }}
         style={{ width: "30vw" }}
       >
-        <div className="flex justify-content-center flex-column pt-6 px-3">
-          <i
-            className="pi pi-check-circle"
-            style={{ fontSize: "5rem", color: "var(--green-500)" }}
-          ></i>
-          <h5>Registration Successful!</h5>
-          <p style={{ lineHeight: 1.5, textIndent: "1rem" }}>
-            Your account is registered under name <b>{formData.name}</b> ; it'll
-            be valid next 30 days without activation. Please check{" "}
-            <b>{formData.email}</b> for activation instructions.
-          </p>
-        </div>
+        {mainDialog}
       </Dialog>
 
       <div className="flex justify-content-center">
         <div className="card">
-          <h5 className="text-center">Register</h5>
+          <img src={Logo} alt={Logo} />
+          <h3 className="text-center font-bold">{headerAuthPanel}</h3>
           <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
-            {routePage === "signup" && (
+            {routePage !== "password-reset" && routePage === "signup" && (
               <div className="field">
                 <span className="p-float-label">
                   <Controller
@@ -214,34 +316,46 @@ const LoginPanel = () => {
               </span>
               {getFormErrorMessage("email")}
             </div>
-            <div className="field">
-              <span className="p-float-label">
-                <Controller
-                  name="password"
-                  control={control}
-                  rules={{ required: "Password is required." }}
-                  render={({ field, fieldState }) => (
-                    <Password
-                      id={field.name}
-                      {...field}
-                      toggleMask
-                      className={classNames({
-                        "p-invalid": fieldState.invalid,
-                      })}
-                      header={passwordHeader}
-                      footer={passwordFooter}
-                    />
-                  )}
-                />
-                <label
-                  htmlFor="password"
-                  className={classNames({ "p-error": errors.password })}
-                >
-                  Password*
-                </label>
-              </span>
-              {getFormErrorMessage("password")}
-            </div>
+            {routePage === "signin" && (
+              <Button
+                label="Forgot password?"
+                className="p-button-link p-0 mb-3 text-right"
+                onClick={() => navigate("/password-reset")}
+              />
+            )}
+            {routePage !== "password-reset" && (
+              <div className="field">
+                <span className="p-float-label">
+                  <Controller
+                    name="password"
+                    control={control}
+                    rules={{
+                      required: "Password is required.",
+                    }}
+                    render={({ field, fieldState }) => (
+                      <Password
+                        id={field.name}
+                        {...field}
+                        toggleMask
+                        className={classNames({
+                          "p-invalid": fieldState.invalid,
+                        })}
+                        header={passwordHeader}
+                        footer={passwordFooter}
+                        feedback={routePage === "signup" ? true : false}
+                      />
+                    )}
+                  />
+                  <label
+                    htmlFor="password"
+                    className={classNames({ "p-error": errors.password })}
+                  >
+                    Password*
+                  </label>
+                </span>
+                {getFormErrorMessage("password")}
+              </div>
+            )}
             {routePage === "signup" && (
               <div className="field-checkbox">
                 <Controller
@@ -267,12 +381,9 @@ const LoginPanel = () => {
                 </label>
               </div>
             )}
+            {wrong && <div className="p-error">{wrongMessage}</div>}
 
-            <Button
-              type="submit"
-              label={routePage === "signup" ? "Signup" : "Login"}
-              className="mt-2"
-            />
+            <Button type="submit" label={submitLabelButton} className="mt-2" />
           </form>
         </div>
       </div>

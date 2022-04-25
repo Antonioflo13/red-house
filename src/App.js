@@ -16,8 +16,9 @@ function App() {
       <ParallaxProvider>
         <div className={styles.container}>
           {location.pathname !== "/success" &&
-            location.pathname !== "/login" &&
-            location.pathname !== "/signup" && (
+            location.pathname !== "/signin" &&
+            location.pathname !== "/signup" &&
+            location.pathname !== "/password-reset" && (
               <div className={styles.header}>
                 <Header />
               </div>
@@ -27,8 +28,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/grid" element={<Grid />} />
               <Route path="/success" element={<SuccessPayment />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/signin" element={<Login />} />
               <Route path="/signup" element={<Login />} />
+              <Route path="/password-reset" element={<Login />} />
             </Routes>
           </div>
         </div>

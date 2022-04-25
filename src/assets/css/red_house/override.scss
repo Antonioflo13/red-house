@@ -1,0 +1,72 @@
+@import "./color.scss";
+
+//Button:focus
+.p-button:focus {
+  box-shadow: $primary-input-focus-box-shadow-color;
+}
+//Button:enabled
+.p-button:enabled {
+  background-color: $primary-color;
+  border: 1px solid $primary-border-color;
+  color: $primary-text-color;
+}
+//Button:active
+.p-button:enabled:active {
+  background-color: $primary-color;
+  border: 1px solid $primary-border-color;
+  color: $primary-text-color;
+}
+//:hover
+.p-button:enabled:hover {
+  background-color: $primary-hover-color;
+  border: 1px solid $primary-border-color;
+}
+//:disabled
+.p-button:disabled {
+  background-color: $primary-hover-color;
+  border: 1px solid $primary-border-color;
+}
+//:disabled:hover
+.p-button:disabled:hover {
+  background-color: $primary-hover-color;
+  border: 1px solid $primary-border-color;
+}
+//Button-text:enabled:hover
+.p-button.p-button-text:enabled:hover {
+  background-color: $primary-hover-color;
+  border: 1px solid $primary-border-color;
+  color: $primary-text-color;
+}
+//Button-link:enabled
+.p-button.p-button-link:enabled {
+  background-color: transparent;
+  border: none;
+  color: $secondary-text-color;
+}
+//Button-link:enabled:hover
+.p-button.p-button-link:enabled:hover {
+  color: $secondary-text-color;
+}
+//Button-rounded:hover
+.p-button.p-component.p-button-rounded:hover {
+  background-color: $primary-hover-color;
+  border: 1px solid $primary-border-color;
+}
+//:active
+.p-button.p-component.p-button-rounded:active {
+  background-color: $primary-hover-color;
+  border: 1px solid $primary-border-color;
+}
+//:enabled:focus
+.p-button.p-component.p-button-rounded:enabled:focus {
+  border-color: $primary-input-focus-border-hover-color;
+}
+//input:focus
+.p-inputtext:enabled:focus {
+  box-shadow: $primary-input-focus-box-shadow-color;
+  border-color: $primary-input-focus-border-color;
+}
+//input:hover
+.p-inputtext:enabled:hover {
+  border-color: $primary-input-focus-border-hover-color;
+}

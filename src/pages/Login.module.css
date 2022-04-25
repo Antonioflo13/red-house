@@ -22,10 +22,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
-
-  .imageCard {
-    width: 80px;
+    text-align: center;
   }
 
   .titleCard {

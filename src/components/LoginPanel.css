@@ -4,6 +4,10 @@
 .form-demo .card form {
     margin-top: 2rem;
 }
+.form-demo img {
+    text-align: center;
+    width: 80px;
+  }
 .form-demo .card .field {
     margin-bottom: 1.5rem;
 }
