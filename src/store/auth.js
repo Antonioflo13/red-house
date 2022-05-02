@@ -1,5 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { db } from "../firebase-config";
+import { collection, getDocs } from "firebase/firestore";
+
 const initialState = {
   token: null,
   expired: 0,
@@ -14,10 +17,12 @@ export const authSlice = createSlice({
     login: (state, data) => {
       state.token = data.payload.token;
       state.expired = data.payload.expired;
+      state.fullName = data.payload.fullName;
       state.email = data.payload.email;
       state.uid = data.payload.uid;
       localStorage.setItem("token", state.token);
       localStorage.setItem("expired", state.expired);
+      localStorage.setItem("fullName", state.fullName);
       localStorage.setItem("email", state.email);
       localStorage.setItem("uid", state.uid);
     },

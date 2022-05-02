@@ -182,14 +182,26 @@ const LoginPanel = () => {
 
   const signIn = (data) => {
     signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((response) => {
-        const authInfo = {
-          token: response.user.accessToken,
-          expired: response._tokenResponse.expiresIn,
-          email: response.user.email,
-          uid: response.user.uid,
+      .then((signInresponse) => {
+        const hostCollectionRef = collection(db, "hosts");
+        const getInfoHost = async () => {
+          const dataDb = await getDocs(hostCollectionRef);
+          const infoHost = dataDb.docs.find((reservation) => {
+            return reservation.data().email === data.email;
+          });
+          return infoHost.data();
         };
-        dispatch(login(authInfo));
+        getInfoHost().then((response) => {
+          const authInfo = {
+            token: signInresponse.user.accessToken,
+            expired: signInresponse._tokenResponse.expiresIn,
+            fullName: response.name,
+            email: signInresponse.user.email,
+            uid: signInresponse.user.uid,
+          };
+          dispatch(login(authInfo));
+          navigate("/dashboard");
+        });
       })
       .catch((error) => {
         if (error.message.includes("wrong-password")) {

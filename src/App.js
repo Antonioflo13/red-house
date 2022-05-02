@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Grid from "./pages/grid";
 import SuccessPayment from "./pages/SuccessPayment";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 import styles from "./App.module.css";
 
@@ -15,14 +16,11 @@ function App() {
     <div className="App">
       <ParallaxProvider>
         <div className={styles.container}>
-          {location.pathname !== "/success" &&
-            location.pathname !== "/signin" &&
-            location.pathname !== "/signup" &&
-            location.pathname !== "/password-reset" && (
-              <div className={styles.header}>
-                <Header />
-              </div>
-            )}
+          {location.pathname === "/" && (
+            <div className={styles.header}>
+              <Header />
+            </div>
+          )}
           <div className={styles.main}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -31,6 +29,7 @@ function App() {
               <Route path="/signin" element={<Login />} />
               <Route path="/signup" element={<Login />} />
               <Route path="/password-reset" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Routes>
           </div>
         </div>

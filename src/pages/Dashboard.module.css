@@ -1,0 +1,33 @@
+.container {
+    height: 100vh;
+    display: grid;
+    grid-template-areas:
+        "sideMenu main main main";
+}
+
+.bgMain {
+    background-image: url("https://i.pinimg.com/originals/2e/fe/c2/2efec261efc0e9b0d87ca985fe25c910.jpg");
+    background-blend-mode: overlay;
+    background-color: rgba(211, 211, 211, 0.2);
+}
+
+.sideMenu {
+    grid-area: sideMenu;
+    align-self: center;
+}
+
+.cardSideMenu {
+    height: 97vh;
+    width: 95%;
+    margin-left: 0.2rem;
+}
+
+.main{
+    grid-area: main;
+    align-self: center;
+}
+
+.cardMain {
+    height: 97vh;
+    width: 99%;
+}
