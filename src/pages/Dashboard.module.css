@@ -1,5 +1,6 @@
 .container {
-    height: 100vh;
+    height: 100%;
+    padding: 1rem;
     display: grid;
     grid-template-areas:
         "sideMenu main main main";
@@ -13,11 +14,11 @@
 
 .sideMenu {
     grid-area: sideMenu;
-    align-self: center;
+    align-self: start;
 }
 
 .cardSideMenu {
-    height: 97vh;
+    height: 100%;
     width: 95%;
     margin-left: 0.2rem;
 }
@@ -28,6 +29,6 @@
 }
 
 .cardMain {
-    height: 97vh;
+    height: 100%;
     width: 99%;
 }

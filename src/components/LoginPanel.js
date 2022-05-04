@@ -37,8 +37,6 @@ const LoginPanel = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const hostsCollectionRef = collection(db, "hosts");
-
   const defaultValues = {
     name: "",
     email: "",
@@ -69,7 +67,7 @@ const LoginPanel = () => {
         ></i>
         <h5 className="py-2">Registration Successful!</h5>
         <div className="text-center">
-          Your account is registered under name <b>{formData.email}</b>.
+          Your account is registered <b>{formData.email}</b>.
         </div>
       </div>
     </React.Fragment>
@@ -113,6 +111,7 @@ const LoginPanel = () => {
         className="p-button-text"
         autoFocus
         onClick={() => {
+          if (routePage === "signup") navigate("/signin");
           setShowMessage(false);
           reset();
         }}
@@ -262,15 +261,20 @@ const LoginPanel = () => {
       >
         {mainDialog}
       </Dialog>
-
-      <div className="flex justify-content-center">
+      <div>
         <div className="card">
           <img src={Logo} alt={Logo} />
           <h3 className="text-center font-bold">{headerAuthPanel}</h3>
           <form onSubmit={handleSubmit(onSubmit)} className="p-fluid">
             {routePage !== "password-reset" && routePage === "signup" && (
-              <div className="field">
-                <span className="p-float-label">
+              <div className="field text-left">
+                <label
+                  htmlFor="name"
+                  className={classNames({ "p-error": errors.name })}
+                >
+                  Name
+                </label>
+                <span>
                   <Controller
                     name="name"
                     control={control}
@@ -279,6 +283,7 @@ const LoginPanel = () => {
                       <InputText
                         id={field.name}
                         {...field}
+                        placeholder="Name"
                         autoFocus
                         className={classNames({
                           "p-invalid": fieldState.invalid,
@@ -286,18 +291,18 @@ const LoginPanel = () => {
                       />
                     )}
                   />
-                  <label
-                    htmlFor="name"
-                    className={classNames({ "p-error": errors.name })}
-                  >
-                    Name*
-                  </label>
                 </span>
                 {getFormErrorMessage("name")}
               </div>
             )}
-            <div className="field">
-              <span className="p-float-label p-input-icon-right">
+            <div className="field text-left">
+              <label
+                htmlFor="email"
+                className={classNames({ "p-error": !!errors.email })}
+              >
+                Email
+              </label>
+              <span className="p-input-icon-right">
                 <i className="pi pi-envelope" />
                 <Controller
                   name="email"
@@ -313,18 +318,13 @@ const LoginPanel = () => {
                     <InputText
                       id={field.name}
                       {...field}
+                      placeholder="Email"
                       className={classNames({
                         "p-invalid": fieldState.invalid,
                       })}
                     />
                   )}
                 />
-                <label
-                  htmlFor="email"
-                  className={classNames({ "p-error": !!errors.email })}
-                >
-                  Email*
-                </label>
               </span>
               {getFormErrorMessage("email")}
             </div>
@@ -336,8 +336,14 @@ const LoginPanel = () => {
               />
             )}
             {routePage !== "password-reset" && (
-              <div className="field">
-                <span className="p-float-label">
+              <div className="field text-left">
+                <label
+                  htmlFor="password"
+                  className={classNames({ "p-error": errors.password })}
+                >
+                  Password
+                </label>
+                <span>
                   <Controller
                     name="password"
                     control={control}
@@ -349,6 +355,7 @@ const LoginPanel = () => {
                         id={field.name}
                         {...field}
                         toggleMask
+                        placeholder="Password"
                         className={classNames({
                           "p-invalid": fieldState.invalid,
                         })}
@@ -358,12 +365,6 @@ const LoginPanel = () => {
                       />
                     )}
                   />
-                  <label
-                    htmlFor="password"
-                    className={classNames({ "p-error": errors.password })}
-                  >
-                    Password*
-                  </label>
                 </span>
                 {getFormErrorMessage("password")}
               </div>
