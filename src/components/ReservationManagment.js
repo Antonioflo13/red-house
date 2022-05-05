@@ -12,7 +12,6 @@ import { InputText } from "primereact/inputtext";
 
 const ReservationManagment = (props) => {
   const { reservationsInfo } = props;
-  console.log(reservationsInfo);
   let emptyProduct = {
     id: null,
     name: "",

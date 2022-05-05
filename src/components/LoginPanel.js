@@ -21,7 +21,7 @@ import { Divider } from "primereact/divider";
 import { classNames } from "primereact/utils";
 
 import Logo from "../assets/img/Logo.png";
-import "./LoginPanel.css";
+import "./styles/LoginPanel.scss";
 
 const LoginPanel = () => {
   const [showMessage, setShowMessage] = useState(false);

@@ -14,7 +14,7 @@ import Dashboard from "./pages/Dashboard";
 
 import Idle from "./components/Idle";
 
-import styles from "./App.module.css";
+import styles from "./App.module.scss";
 
 function App() {
   const [showDialogSessionExpired, setShowDialogSessionExpired] =
@@ -35,8 +35,6 @@ function App() {
   const startTimer = () => {
     setTimer(
       setInterval(() => {
-        console.log(getSessionExpire);
-        getSessionExpire -= 1;
         if (getSessionExpire === 0) {
           clearInterval(timer);
           setShowDialogSessionExpired(true);

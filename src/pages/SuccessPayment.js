@@ -8,7 +8,7 @@ import { Card } from "primereact/card";
 import { Skeleton } from "primereact/skeleton";
 
 import Logo from "../assets/img/Logo.png";
-import styles from "./SuccessPayment.module.css";
+import styles from "./styles/SuccessPayment.module.scss";
 
 const SuccessPayment = () => {
   const reservationsCollectionRef = collection(db, "reservations");

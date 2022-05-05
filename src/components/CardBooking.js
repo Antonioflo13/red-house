@@ -5,7 +5,7 @@ import { db } from "../firebase-config";
 import { collection, getDocs } from "firebase/firestore";
 import moment from "moment";
 
-import styles from "./CardBooking.module.css";
+import styles from "./styles/CardBooking.module.scss";
 
 import BookingCalendar from "./BookingCalendar";
 import DialogVisitors from "./DialogVisitors";

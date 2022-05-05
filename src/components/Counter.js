@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "primereact/button";
 
-import style from "./Counter.module.css";
+import style from "./styles/Counter.module.scss";
 
 const Counter = (props) => {
   const { setVisitors, totalVisitors } = props;

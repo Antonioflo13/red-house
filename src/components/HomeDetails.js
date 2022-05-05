@@ -12,7 +12,7 @@ import image7 from "../assets/img/carouselImages/img7.jpeg";
 import image8 from "../assets/img/carouselImages/img8.jpeg";
 import image9 from "../assets/img/carouselImages/img9.jpeg";
 
-import styles from "./HomeDetails.module.css";
+import styles from "./styles/HomeDetails.module.scss";
 
 export default class HomeDetails extends Component {
   constructor(props) {

@@ -1,4 +1,4 @@
-import styles from "./SummaryReservation.module.css";
+import styles from "./styles/SummaryReservation.module.scss";
 
 const SummaryReservation = (props) => {
   const { totalVisitors, selectedDates, reservationRange, totalPrice, price } =

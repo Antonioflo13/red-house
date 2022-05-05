@@ -8,7 +8,7 @@ import moment from "moment";
 
 import { Card } from "primereact/card";
 
-import styles from "./Dashboard.module.css";
+import styles from "./styles/Dashboard.module.scss";
 
 import ReservationManagment from "../components/ReservationManagment";
 

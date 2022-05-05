@@ -9,7 +9,7 @@ import { ReactComponent as AirConditioner } from "../assets/icon/air-conditioner
 import { ReactComponent as Tv } from "../assets/icon/tv-screen.svg";
 import { ReactComponent as Kitchen } from "../assets/icon/kitchen.svg";
 
-import styles from "./Services.module.css";
+import styles from "./styles/Services.module.scss";
 
 const Services = () => {
   const footer = (

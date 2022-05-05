@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Dialog } from "primereact/dialog";
 
-import style from "./DialogVisitors.module.css";
+import style from "./styles/DialogVisitors.module.scss";
 
 import Counter from "./Counter";
 import DialogVisitorsFooter from "./DialogVisitorsFooter";

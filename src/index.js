@@ -6,11 +6,10 @@ import { BrowserRouter } from "react-router-dom";
 import { store } from "./store";
 import { Provider } from "react-redux";
 
-import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/lara-light-blue/theme.css";
-import "./index.css";
-import "./assets/css/red_house/override.scss";
+import "primereact/resources/primereact.min.css";
+require(`./assets/scss/${process.env.REACT_APP_THEME}/override.scss`);
 
 ReactDOM.render(
   <React.StrictMode>

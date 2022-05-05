@@ -2,7 +2,7 @@ import { Card } from "primereact/card";
 
 import LoginPanel from "../components/LoginPanel";
 
-import styles from "./Login.module.css";
+import styles from "./styles/Login.module.scss";
 
 const Login = () => {
   return (
