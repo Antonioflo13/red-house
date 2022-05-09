@@ -193,7 +193,9 @@ const LoginPanel = () => {
         getInfoHost().then((response) => {
           const authInfo = {
             token: signInresponse.user.accessToken,
-            expired: signInresponse._tokenResponse.expiresIn,
+            expired:
+              new Date().getTime() +
+              +signInresponse._tokenResponse.expiresIn * 1000,
             fullName: response.name,
             email: signInresponse.user.email,
             uid: signInresponse.user.uid,
@@ -330,6 +332,7 @@ const LoginPanel = () => {
             </div>
             {routePage === "signin" && (
               <Button
+                type="button"
                 label="Forgot password?"
                 className="p-button-link p-0 mb-3 text-right"
                 onClick={() => navigate("/password-reset")}

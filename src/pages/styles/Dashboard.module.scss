@@ -17,8 +17,23 @@
     align-self: start;
 }
 
+.sideMenuProfile {
+    margin-bottom: 1rem;
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+
+.sideMenuReservationInfo {
+    display: flex;
+    justify-content: space-between;
+    span {
+        font-weight: bold;
+    }
+}
+
 .cardSideMenu {
-    height: 100%;
+    display: flex;
+    flex-direction: column;
     width: 95%;
     margin-left: 0.2rem;
 }

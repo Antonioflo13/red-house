@@ -23,19 +23,21 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { pathname } = location;
   let getSessionExpire = localStorage.getItem("expired");
   useEffect(() => {
-    if (location.pathname === "/dashboard") {
+    if (pathname === "/dashboard") {
       startTimer();
     } else {
       stopTimer(timer);
     }
-  }, [getSessionExpire, location.pathname]);
+  }, [getSessionExpire, pathname]);
 
   const startTimer = () => {
     setTimer(
       setInterval(() => {
-        if (getSessionExpire === 0) {
+        const now = new Date().getTime();
+        if (getSessionExpire < now) {
           clearInterval(timer);
           setShowDialogSessionExpired(true);
           dispatch(logout);

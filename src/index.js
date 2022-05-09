@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primereact/resources/primereact.min.css";
+import "/node_modules/primeflex/primeflex.css";
 require(`./assets/scss/${process.env.REACT_APP_THEME}/override.scss`);
 
 ReactDOM.render(
