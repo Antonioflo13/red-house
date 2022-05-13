@@ -41,7 +41,6 @@ const ReservationManagment = (props) => {
 
   const [productDialog, setProductDialog] = useState(false);
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-  const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
   const [product, setProduct] = useState(emptyProduct);
   const [submitted, setSubmitted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
@@ -51,8 +50,10 @@ const ReservationManagment = (props) => {
   const reservationsCollectionRef = collection(db, "reservations");
 
   useEffect(() => {
-    checkAvaiableCalendarDate();
-  }, [productDialog === true]);
+    if (productDialog === true) {
+      checkAvaiableCalendarDate();
+    }
+  }, [productDialog]);
 
   const checkAvaiableCalendarDate = async () => {
     const data = await getDocs(reservationsCollectionRef);
@@ -83,10 +84,6 @@ const ReservationManagment = (props) => {
 
   const hideDeleteProductDialog = () => {
     setDeleteProductDialog(false);
-  };
-
-  const hideDeleteProductsDialog = () => {
-    setDeleteProductsDialog(false);
   };
 
   const editProduct = (product) => {
@@ -159,7 +156,7 @@ const ReservationManagment = (props) => {
 
   const datesTemplate = (rowData) => {
     return (
-      <span>
+      <React.Fragment>
         <div>
           <span className="font-bold">IN: </span>
           {moment(rowData.startReservation.seconds, "X").format("DD/MM/YYYY")}
@@ -168,7 +165,7 @@ const ReservationManagment = (props) => {
           <span className="font-bold">OUT: </span>
           {moment(rowData.endReservation.seconds, "X").format("DD/MM/YYYY")}
         </div>
-      </span>
+      </React.Fragment>
     );
   };
 
@@ -280,7 +277,8 @@ const ReservationManagment = (props) => {
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
           globalFilter={globalFilter}
           header={header}
-          responsiveLayout="scroll"
+          responsiveLayout="stack"
+          breakpoint="960px"
         >
           <Column field="ID" header="ID" body={idTemplate} />
           <Column field="name" header="Name / Email" body={nameEmailTemplate} />

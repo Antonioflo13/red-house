@@ -1,5 +1,7 @@
+@import "../../assets/scss/red_house/override.scss";
+
 .container {
-    height: 100%;
+    min-height: 100vh;
     padding: 1rem;
     display: grid;
     grid-template-areas:
@@ -31,19 +33,46 @@
     }
 }
 
+.sideMenuButton {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 1rem;
+}
+
 .cardSideMenu {
     display: flex;
     flex-direction: column;
     width: 95%;
     margin-left: 0.2rem;
+    & {
+        background-color: $primary-color;
+    }
+}
+
+.sidebar { 
+    & {
+        background-color: $primary-color;
+    }
 }
 
 .main{
     grid-area: main;
-    align-self: center;
 }
 
 .cardMain {
-    height: 100%;
     width: 99%;
+}
+
+@media (max-width: 991.98px){
+    .cardSideMenu {
+        display: none;
+    }
+}
+
+@media (min-width: 991.98px){
+    .sidebarButton {
+        display: none;
+        
+    }
 }
